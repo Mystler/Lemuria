@@ -1,0 +1,22 @@
+
+material test_LinkPlace
+{
+	technique Map#10
+	{
+		pass Map#11
+		{
+			ambient 0.486275 0.486275 0.486275 1
+			diffuse 0.494118 0.494118 0.494118 1
+			specular 0.898039 0.898039 0.898039 1 20
+
+			texture_unit Map#12
+			{
+				texture test_LinkInGround.png
+				filtering linear linear linear
+				scale 0.333 0.333
+			}
+		}
+
+	}
+
+}

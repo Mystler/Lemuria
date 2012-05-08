@@ -1,0 +1,25 @@
+
+material test_MainGround
+{
+	technique Map#2
+	{
+		pass Map#3
+		{
+			lighting off
+
+			texture_unit Map#4
+			{
+                texture test_groundgrass.png
+				filtering linear linear linear
+				scale 0.05 0.05
+			}
+            texture_unit
+            {
+                texture test_groundLight.png
+                color_op modulate
+            }
+		}
+
+	}
+
+}

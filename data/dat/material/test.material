@@ -1,0 +1,89 @@
+
+material test_NoMaterial
+{
+	technique
+	{
+		pass
+		{
+		}
+
+	}
+
+}
+
+
+
+material test_Sky
+{
+	technique Map#18
+	{
+		pass Map#19
+		{
+			ambient 0.698039 0.698039 0.698039 1
+			diffuse 0.698039 0.698039 0.698039 1
+			specular 0.898039 0.898039 0.898039 1 20
+			emissive 1 1 1 1
+
+			texture_unit Map#20
+			{
+				texture test_sky.png
+				filtering linear linear linear
+			}
+		}
+
+	}
+
+}
+
+
+
+
+
+material test_EndWall
+{
+	technique Map#5
+	{
+		pass Map#6
+		{
+			ambient 0.317647 0.317647 0.317647 1
+			diffuse 0.301961 0.301961 0.301961 1
+			specular 0.898039 0.898039 0.898039 1 20
+
+			texture_unit Map#7
+			{
+				texture test_wallstone.png
+				filtering linear linear linear
+				scale 0.05 1
+			}
+		}
+
+	}
+
+}
+
+
+
+
+
+material test_ColumnMarble
+{
+	technique Map#14
+	{
+		pass Map#15
+		{
+			ambient 0.439216 0.439216 0.439216 1
+			diffuse 0.843137 0.843137 0.843137 1
+			specular 0.898039 0.898039 0.898039 1 20
+
+			texture_unit Map#16
+			{
+				texture test_marble.jpg
+				filtering linear linear linear
+			}
+		}
+
+	}
+
+}
+
+
