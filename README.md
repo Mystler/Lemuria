@@ -8,7 +8,7 @@ and Bullet as well as simple networking.
 The story and contents of the game itself are still unclear.
 
 Dependencies
-===========
+------------
 
 * OGRE 3D Graphics Engine - http://www.ogre3d.org/
 * Crazy Eddie's GUI System - http://www.cegui.org.uk/wiki/index.php/Main_Page
@@ -21,7 +21,7 @@ These dependencies may require additional libraries.
 Compiling has been tested on Windows and Linux (Arch).
 
 3rd-party
-=========
+---------
 
 Lemuria includes the following third party libraries in it's
 source.
