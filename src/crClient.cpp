@@ -69,9 +69,9 @@ bool crClient::init(void)
 {
     //configure
 #ifdef _DEBUG
-    mPluginsCfg = "plugins_d.cfg";
+    mPluginsCfg = "../cfg/plugins_d.cfg";
 #else
-    mPluginsCfg = "plugins.cfg";
+    mPluginsCfg = "../cfg/plugins.cfg";
 #endif
 
     mRoot = new Root(mPluginsCfg);
@@ -86,16 +86,16 @@ bool crClient::init(void)
     mSceneMgr = mRoot->createSceneManager("DefaultSceneManager");
     
     //load resources
-    ResourceGroupManager::getSingleton().addResourceLocation("../dat/material", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../dat/texture", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../dat/mesh", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../dat", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../gui/imagesets", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../gui/looknfeel", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../gui/schemes", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../gui/layouts", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../gui/fonts", "FileSystem");
-    ResourceGroupManager::getSingleton().addResourceLocation("../sfx", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/scene/material", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/scene/texture", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/scene/mesh", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/scene", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/gui/imagesets", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/gui/looknfeel", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/gui/schemes", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/gui/layouts", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/gui/fonts", "FileSystem");
+    ResourceGroupManager::getSingleton().addResourceLocation("../dat/sfx", "FileSystem");
     TextureManager::getSingleton().setDefaultNumMipmaps(5);
     ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
     
