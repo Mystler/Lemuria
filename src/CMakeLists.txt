@@ -44,7 +44,7 @@ set(3rdparty
 
 add_definitions(-DTIXML_USE_STL)
 
-add_executable(Lemuria
+add_executable(Lemuria WIN32
     ${CLIENT_HEADERS}
     ${CLIENT_SOURCES}
     ${3rdparty}

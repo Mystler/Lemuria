@@ -4,9 +4,7 @@ project(Lemuria)
 
 if(WIN32)
     set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;$ENV{OGRE_HOME}/CMake/;${CMAKE_MODULE_PATH}")
-endif()
-
-if(UNIX)
+elseif(UNIX)
     if(EXISTS "/usr/local/lib/OGRE/cmake")
         set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;/usr/local/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
     elseif(EXISTS "/usr/lib/OGRE/cmake")
@@ -14,6 +12,7 @@ if(UNIX)
     else()
         message(SEND_ERROR "Failed to find module path.")
     endif()
+    find_package(Threads)
 endif()
 
 set(CMAKE_DEBUG_POSTFIX "_d")
@@ -27,10 +26,6 @@ find_package(OpenAL REQUIRED)
 find_package(OgreOggSound REQUIRED)
 find_package(Bullet REQUIRED)
 find_package(RakNet REQUIRED)
-
-if(UNIX)
-    find_package(Threads)
-endif()
 
 include_directories(${OIS_INCLUDE_DIRS}
     ${OGRE_INCLUDE_DIRS}
