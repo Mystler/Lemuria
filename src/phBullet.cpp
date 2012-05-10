@@ -20,11 +20,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "phBullet.h"
 
-phBullet::phBullet(void)
-{
+phBullet::phBullet(void) {
     //init Physics World
     btBroadphase = new btAxisSweep3(btVector3(-10000, -10000, -10000),
-        btVector3(10000, 10000, 10000), 1024);
+                                    btVector3(10000, 10000, 10000), 1024);
     btCollisionConfig = new btDefaultCollisionConfiguration();
     btDispatcher = new btCollisionDispatcher(btCollisionConfig);
     btSolver = new btSequentialImpulseConstraintSolver();
@@ -32,8 +31,7 @@ phBullet::phBullet(void)
     btWorld->setGravity(btVector3(0, -46.9f, 0));
 }
 
-phBullet::~phBullet(void)
-{
+phBullet::~phBullet(void) {
     //clean up
     destroyPhysicals();
     delete btWorld;
@@ -43,40 +41,33 @@ phBullet::~phBullet(void)
     delete btBroadphase;
 }
 
-phBullet& phBullet::getInstance()
-{
+phBullet &phBullet::getInstance() {
     static phBullet btInstance;
     return btInstance;
 }
 
-btDynamicsWorld* phBullet::getWorld()
-{
+btDynamicsWorld *phBullet::getWorld() {
     return btWorld;
 }
 
-BtOgre::DebugDrawer* phBullet::getDbgDrawer()
-{
+BtOgre::DebugDrawer *phBullet::getDbgDrawer() {
     return btDbgDrawer;
 }
 
-void phBullet::initDebugDrawer(SceneManager* sceneMgr)
-{
+void phBullet::initDebugDrawer(SceneManager *sceneMgr) {
     //init Debug Drawer
     btDbgDrawer = new BtOgre::DebugDrawer(sceneMgr->getRootSceneNode(), btWorld);
     btWorld->setDebugDrawer(btDbgDrawer);
 }
 
-void phBullet::destroyPhysicals(void)
-{
-    std::deque<btRigidBody*>::iterator itBody = btBodies.begin();
-    while(btBodies.end() != itBody)
-    {   
+void phBullet::destroyPhysicals(void) {
+    std::deque<btRigidBody *>::iterator itBody = btBodies.begin();
+    while(btBodies.end() != itBody) {
         delete *itBody;
         ++itBody;
     }
-    std::deque<btCollisionShape*>::iterator itShape = btShapes.begin();
-    while(btShapes.end() != itShape)
-    {   
+    std::deque<btCollisionShape *>::iterator itShape = btShapes.begin();
+    while(btShapes.end() != itShape) {
         delete *itShape;
         ++itShape;
     }
@@ -84,8 +75,7 @@ void phBullet::destroyPhysicals(void)
     btShapes.clear();
 }
 
-btRigidBody* phBullet::createPhysicalAvatar(SceneNode* avatarNode)
-{
+btRigidBody *phBullet::createPhysicalAvatar(SceneNode *avatarNode) {
     //calculate Avatar Shape
     btScalar width = 0.4f;
     btScalar height = 1.8f;
@@ -93,36 +83,34 @@ btRigidBody* phBullet::createPhysicalAvatar(SceneNode* avatarNode)
     btScalar sphereRadii[2];
     sphereRadii[0] = width;
     sphereRadii[1] = width;
-    spherePositions[0] = btVector3(0, (height/2 - width), 0);
-    spherePositions[1] = btVector3(0, (-height/2 + width), 0);
-    btCollisionShape* avatarShape = new btMultiSphereShape(&spherePositions[0], &sphereRadii[0], 2);
-    
+    spherePositions[0] = btVector3(0, (height / 2 - width), 0);
+    spherePositions[1] = btVector3(0, (-height / 2 + width), 0);
+    btCollisionShape *avatarShape = new btMultiSphereShape(&spherePositions[0], &sphereRadii[0], 2);
+
     btScalar mass = 75;
     btVector3 inertia;
     avatarShape->calculateLocalInertia(mass, inertia);
-    
+
     //create Avatar physics
-    BtOgre::RigidBodyState* avatarState = new BtOgre::RigidBodyState(avatarNode);
-    btRigidBody* avatarBody = new btRigidBody(mass, avatarState, avatarShape, inertia);
+    BtOgre::RigidBodyState *avatarState = new BtOgre::RigidBodyState(avatarNode);
+    btRigidBody *avatarBody = new btRigidBody(mass, avatarState, avatarShape, inertia);
     avatarBody->setSleepingThresholds(0, 0);
     avatarBody->setAngularFactor(0);
     btWorld->addRigidBody(avatarBody);
     btShapes.push_back(avatarShape);
     btBodies.push_back(avatarBody);
-    
+
     return avatarBody;
 }
 
-bool phBullet::avatarOnGround(btRigidBody* avatar)
-{
+bool phBullet::avatarOnGround(btRigidBody *avatar) {
     btTransform xform;
     avatar->getMotionState()->getWorldTransform(xform);
     btVector3 avPos = xform.getOrigin();
     btVector3 avToGround = avPos + btVector3(0, -1.1f, 0);
     btDynamicsWorld::ClosestRayResultCallback groundRay(avPos, avToGround);
     btWorld->rayTest(avPos, avToGround, groundRay);
-    if(groundRay.hasHit())
-    {
+    if(groundRay.hasHit()) {
         return true;
     }
     return false;

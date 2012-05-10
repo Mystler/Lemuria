@@ -27,11 +27,10 @@ using namespace Ogre;
 
 //For more information, see the cpp file.
 
-class scObjectMgr
-{
+class scObjectMgr {
 public:
     scObjectMgr(void);
     virtual ~scObjectMgr(void);
-    void processScene(SceneManager* sceneMgr);
+    void processScene(SceneManager *sceneMgr);
 };
 #endif

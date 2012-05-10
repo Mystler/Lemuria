@@ -64,42 +64,41 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 using namespace Ogre;
 using namespace RakNet;
 
-class crClient : public WindowEventListener, public FrameListener, public OIS::MouseListener, public OIS::KeyListener
-{
+class crClient : public WindowEventListener, public FrameListener, public OIS::MouseListener, public OIS::KeyListener {
 public:
-    static crClient& getInstance();
+    static crClient &getInstance();
     bool init(void);
-    SceneManager* getSceneManager();
+    SceneManager *getSceneManager();
     bool ntMultiplayer;
     String ntServerIP;
     RakString ntPlayerName;
 private:
     crClient(void);
     virtual ~crClient(void);
-    virtual void windowResized(RenderWindow* rw);
-    virtual void windowClosed(RenderWindow* rw);
-    virtual bool frameRenderingQueued(const FrameEvent& evt);
-    virtual bool frameStarted(const FrameEvent& evt);
-    virtual bool frameEnded(const FrameEvent& evt);
-    virtual bool mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
-    virtual bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
-    virtual bool mouseMoved(const OIS::MouseEvent& arg);
-    virtual bool keyPressed(const OIS::KeyEvent& arg);
-    virtual bool keyReleased(const OIS::KeyEvent& arg);
+    virtual void windowResized(RenderWindow *rw);
+    virtual void windowClosed(RenderWindow *rw);
+    virtual bool frameRenderingQueued(const FrameEvent &evt);
+    virtual bool frameStarted(const FrameEvent &evt);
+    virtual bool frameEnded(const FrameEvent &evt);
+    virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    virtual bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    virtual bool mouseMoved(const OIS::MouseEvent &arg);
+    virtual bool keyPressed(const OIS::KeyEvent &arg);
+    virtual bool keyReleased(const OIS::KeyEvent &arg);
     String mPluginsCfg;
-    Root* mRoot;
-    RenderWindow* mWindow;
-    SceneManager* mSceneMgr;
-    OIS::InputManager* mInputManager;
-    OIS::Mouse* mMouse;
-    OIS::Keyboard* mKeyboard;
+    Root *mRoot;
+    RenderWindow *mWindow;
+    SceneManager *mSceneMgr;
+    OIS::InputManager *mInputManager;
+    OIS::Mouse *mMouse;
+    OIS::Keyboard *mKeyboard;
     //Physics
-    btRigidBody* phAvatar;
+    btRigidBody *phAvatar;
     bool btWireframe;
     //GUI
-    CEGUI::Renderer* mGUIRenderer;
+    CEGUI::Renderer *mGUIRenderer;
     //Sound
-    OgreOggSound::OgreOggSoundManager* mSoundManager;
+    OgreOggSound::OgreOggSoundManager *mSoundManager;
     //OIS Input
     bool kShiftDown;
     //AvatarMovement
@@ -108,14 +107,14 @@ private:
     bool avWalk, avWalkBack, avWalkLeft, avWalkRight;
     bool avJump, avFly;
     //Scenes
-    Camera* mCamera;
-    Viewport* vp;
+    Camera *mCamera;
+    Viewport *vp;
     OgreMax::OgreMaxScene scMgr;
     scObjectMgr scObjMgr;
     virtual void Scene01(void);
     //Multiplayer
-    RakPeerInterface* ntPeer;
-    Packet* ntPacket;
+    RakPeerInterface *ntPeer;
+    Packet *ntPacket;
     SystemAddress ntServerAddress;
     BitStream bsOut;
     bool ntConnected;
