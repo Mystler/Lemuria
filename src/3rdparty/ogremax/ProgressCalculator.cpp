@@ -4,13 +4,13 @@
  *
  * This code is available under the OgreMax Free License:
  *   -You may use this code for any purpose, commercial or non-commercial.
- *   -If distributing derived works (that use this source code) in binary or source code form, 
- *    you must give the following credit in your work's end-user documentation: 
+ *   -If distributing derived works (that use this source code) in binary or source code form,
+ *    you must give the following credit in your work's end-user documentation:
  *        "Portions of this work provided by OgreMax (www.ogremax.com)"
  *
  * AND Entertainment assumes no responsibility for any harm caused by using this code.
- * 
- * The OgreMax Sample Viewer and Scene Loader were released at www.ogremax.com 
+ *
+ * The OgreMax Sample Viewer and Scene Loader were released at www.ogremax.com
  */
 
 
@@ -21,50 +21,42 @@ using namespace OgreMax;
 
 
 //Implementation---------------------------------------------------------------
-ProgressCalculator::ProgressCalculator()
-{
+ProgressCalculator::ProgressCalculator() {
     this->progress = 0;
     this->range = 0;
 }
 
-ProgressCalculator::ProgressCalculator(const Ogre::String& name)
-{
+ProgressCalculator::ProgressCalculator(const Ogre::String &name) {
     this->name = name;
     this->progress = 0;
     this->range = 0;
 }
 
-ProgressCalculator::~ProgressCalculator()
-{
+ProgressCalculator::~ProgressCalculator() {
     //Delete child calculators
-    for (Calculators::iterator calculator = this->childCalculators.begin();
-        calculator != this->childCalculators.end();
-        ++calculator)
-    {
+    for(Calculators::iterator calculator = this->childCalculators.begin();
+            calculator != this->childCalculators.end();
+            ++calculator) {
         delete *calculator;
     }
 }
 
-const Ogre::String& ProgressCalculator::GetName() const
-{
+const Ogre::String &ProgressCalculator::GetName() const {
     return this->name;
 }
 
-Ogre::Real ProgressCalculator::GetProgress()
-{
-    if (!this->childCalculators.empty())
-    {
+Ogre::Real ProgressCalculator::GetProgress() {
+    if(!this->childCalculators.empty()) {
         //Reset progress
         this->progress = 0;
 
         //Determine the influence of each child calculator
-        Ogre::Real influence = (Ogre::Real)1.0/this->childCalculators.size();
+        Ogre::Real influence = (Ogre::Real)1.0 / this->childCalculators.size();
 
         //Add the progress of all child calculators
-        for (Calculators::iterator calculator = this->childCalculators.begin();
-            calculator != this->childCalculators.end();
-            ++calculator)
-        {
+        for(Calculators::iterator calculator = this->childCalculators.begin();
+                calculator != this->childCalculators.end();
+                ++calculator) {
             this->progress += (*calculator)->GetProgress() * influence;
         }
     }
@@ -72,15 +64,12 @@ Ogre::Real ProgressCalculator::GetProgress()
     return this->progress;
 }
 
-void ProgressCalculator::SetProgress(Ogre::Real progress)
-{
+void ProgressCalculator::SetProgress(Ogre::Real progress) {
     this->progress = progress;
 }
 
-void ProgressCalculator::Update(Ogre::Real amount)
-{
-    if (this->range > 0)
-    {
+void ProgressCalculator::Update(Ogre::Real amount) {
+    if(this->range > 0) {
         //Update the progress, scaling it by the inverse range
         this->progress += amount / this->range;
 
@@ -90,20 +79,17 @@ void ProgressCalculator::Update(Ogre::Real amount)
     }
 }
 
-Ogre::Real ProgressCalculator::GetRange() const
-{
+Ogre::Real ProgressCalculator::GetRange() const {
     return this->range;
 }
 
-void ProgressCalculator::SetRange(Ogre::Real range)
-{
+void ProgressCalculator::SetRange(Ogre::Real range) {
     this->progress = 0;
     this->range = range;
 }
 
-ProgressCalculator* ProgressCalculator::AddCalculator(const Ogre::String& name)
-{
-    ProgressCalculator* calculator = new ProgressCalculator(name);
+ProgressCalculator *ProgressCalculator::AddCalculator(const Ogre::String &name) {
+    ProgressCalculator *calculator = new ProgressCalculator(name);
     this->childCalculators.push_back(calculator);
     return calculator;
 }

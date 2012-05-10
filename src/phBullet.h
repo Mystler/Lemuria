@@ -27,26 +27,25 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Ogre;
 
-class phBullet
-{
+class phBullet {
 public:
-    std::deque<btRigidBody*> btBodies;
-    std::deque<btCollisionShape*> btShapes;
-    static phBullet& getInstance();
-    btDynamicsWorld* getWorld();
-    BtOgre::DebugDrawer* getDbgDrawer();
-    void initDebugDrawer(SceneManager* sceneMgr);
+    std::deque<btRigidBody *> btBodies;
+    std::deque<btCollisionShape *> btShapes;
+    static phBullet &getInstance();
+    btDynamicsWorld *getWorld() {return btWorld;}
+    BtOgre::DebugDrawer *getDbgDrawer() {return btDbgDrawer;}
+    void initDebugDrawer(SceneManager *sceneMgr);
     void destroyPhysicals(void);
-    btRigidBody* createPhysicalAvatar(SceneNode* avatarNode);
-    bool avatarOnGround(btRigidBody* avatar);
+    btRigidBody *createPhysicalAvatar(SceneNode *avatarNode);
+    bool avatarOnGround(btRigidBody *avatar);
 private:
     phBullet(void);
     virtual ~phBullet(void);
-    btAxisSweep3* btBroadphase;
-    btDefaultCollisionConfiguration* btCollisionConfig;
-    btCollisionDispatcher* btDispatcher;
-    btSequentialImpulseConstraintSolver* btSolver;
-    btDynamicsWorld* btWorld;
-    BtOgre::DebugDrawer* btDbgDrawer;
+    btAxisSweep3 *btBroadphase;
+    btDefaultCollisionConfiguration *btCollisionConfig;
+    btCollisionDispatcher *btDispatcher;
+    btSequentialImpulseConstraintSolver *btSolver;
+    btDynamicsWorld *btWorld;
+    BtOgre::DebugDrawer *btDbgDrawer;
 };
 #endif
