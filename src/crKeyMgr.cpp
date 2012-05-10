@@ -20,21 +20,16 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "crClient.h"
 
-bool crClient::keyPressed(const OIS::KeyEvent& arg)
-{
+bool crClient::keyPressed(const OIS::KeyEvent &arg) {
     CEGUI::System::getSingleton().injectKeyDown(arg.key);
     CEGUI::System::getSingleton().injectChar(arg.text);
-    
-    switch (arg.key)
-    {
+
+    switch(arg.key) {
         case OIS::KC_P:
-            if(!btWireframe)
-            {
+            if(!btWireframe) {
                 phBullet::getInstance().getDbgDrawer()->setDebugMode(1);
                 btWireframe = true;
-            }
-            else
-            {
+            } else {
                 phBullet::getInstance().getDbgDrawer()->setDebugMode(0);
                 btWireframe = false;
             }
@@ -60,23 +55,25 @@ bool crClient::keyPressed(const OIS::KeyEvent& arg)
             avWalkRight = true;
             break;
         case OIS::KC_SPACE:
-            if(!avJump && !avFly) avJump = true;
+            if(!avJump && !avFly)
+                avJump = true;
             break;
         case OIS::KC_V:
-            if(avFly) {avFly = false;}
-            else {avFly = true;}
+            if(avFly) {
+                avFly = false;
+            } else {
+                avFly = true;
+            }
         default:
             break;
     }
-    
+
     return true;
 }
-bool crClient::keyReleased(const OIS::KeyEvent& arg)
-{
+bool crClient::keyReleased(const OIS::KeyEvent &arg) {
     CEGUI::System::getSingleton().injectKeyUp(arg.key);
-    
-    switch (arg.key)
-    {
+
+    switch(arg.key) {
         case OIS::KC_LSHIFT:
         case OIS::KC_RSHIFT:
             kShiftDown = false;
@@ -100,6 +97,6 @@ bool crClient::keyReleased(const OIS::KeyEvent& arg)
         default:
             break;
     }
-    
+
     return true;
 }

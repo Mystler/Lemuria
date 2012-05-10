@@ -78,20 +78,15 @@ if(LEMURIA_INSTALL_EXE)
 endif()
 
 if(LEMURIA_INSTALL_DATA)
-    install(DIRECTORY ../data/bin
+    install(DIRECTORY
         ../data/dat
-        ../data/gui
-        ../data/sfx
         DESTINATION .
-        PATTERN "*svn/*"
-        PATTERN "*svn" EXCLUDE
     )
 endif()
 
 if(LEMURIA_INSTALL_CONFIG)
-    install(DIRECTORY ../data/cfg
+    install(DIRECTORY
+        ../data/cfg
         DESTINATION .
-        PATTERN "*svn/*"
-        PATTERN "*svn" EXCLUDE
     )
 endif()
