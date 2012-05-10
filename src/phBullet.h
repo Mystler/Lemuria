@@ -32,8 +32,8 @@ public:
     std::deque<btRigidBody *> btBodies;
     std::deque<btCollisionShape *> btShapes;
     static phBullet &getInstance();
-    btDynamicsWorld *getWorld();
-    BtOgre::DebugDrawer *getDbgDrawer();
+    btDynamicsWorld *getWorld() {return btWorld;}
+    BtOgre::DebugDrawer *getDbgDrawer() {return btDbgDrawer;}
     void initDebugDrawer(SceneManager *sceneMgr);
     void destroyPhysicals(void);
     btRigidBody *createPhysicalAvatar(SceneNode *avatarNode);

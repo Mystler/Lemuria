@@ -46,14 +46,6 @@ phBullet &phBullet::getInstance() {
     return btInstance;
 }
 
-btDynamicsWorld *phBullet::getWorld() {
-    return btWorld;
-}
-
-BtOgre::DebugDrawer *phBullet::getDbgDrawer() {
-    return btDbgDrawer;
-}
-
 void phBullet::initDebugDrawer(SceneManager *sceneMgr) {
     //init Debug Drawer
     btDbgDrawer = new BtOgre::DebugDrawer(sceneMgr->getRootSceneNode(), btWorld);
