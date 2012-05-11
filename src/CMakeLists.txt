@@ -5,6 +5,7 @@ set(CLIENT_HEADERS
     crPlayer.h
     phBullet.h
     scObjectMgr.h
+    ntMessage.h
 )
 
 set(CLIENT_SOURCES
@@ -14,6 +15,7 @@ set(CLIENT_SOURCES
     crPlayer.cpp
     phBullet.cpp
     scObjectMgr.cpp
+    ntMessage.cpp
 )
 
 set(3rdparty
