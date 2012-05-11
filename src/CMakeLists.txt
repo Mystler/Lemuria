@@ -2,6 +2,7 @@ add_subdirectory(server)
 
 set(CLIENT_HEADERS
     crClient.h
+    crPlayer.h
     phBullet.h
     scObjectMgr.h
 )
@@ -10,6 +11,7 @@ set(CLIENT_SOURCES
     crClient.cpp
     crKeyMgr.cpp
     crMouseMgr.cpp
+    crPlayer.cpp
     phBullet.cpp
     scObjectMgr.cpp
 )
