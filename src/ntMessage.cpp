@@ -70,12 +70,13 @@ crPlayer *ntMessage::readPlayer() {
     return player;
 }
 
-//write
-void ntMessage::writeHeader() {
-    streamOut.Write((MessageID)ntFlag);
+void ntMessage::setFlag(int flag) {
+    ntFlag = (MessageID)flag;
+    streamOut.Write(ntFlag);
     streamOut.Write(fClientID);
 }
 
+//write
 void ntMessage::writePlayer(crPlayer *player) {
     streamOut.Write(player->fIsWalking);
     streamOut.Write(player->fIsTurning);

@@ -36,8 +36,7 @@ using namespace RakNet;
 
 class ntMessage {
 public:
-    //variables
-    int ntFlag;
+    BitStream streamOut;
 
     //ctor
     ntMessage(int clientID);
@@ -46,19 +45,20 @@ public:
     ntMessage::~ntMessage();
 
     int getClientID() { return fClientID; }
+    int getFlag() { return ntFlag; }
+    void setFlag(int flag);
 
     //read
     Vector3 readVector();
     crPlayer *readPlayer();
 
     //write
-    void writeHeader();
     void writePlayerName(RakString name);
     void writePlayer(crPlayer *player);
 private:
-    Packet *ntPacket;
     BitStream streamIn;
-    BitStream streamOut;
     int fClientID;
+    MessageID ntFlag;
+    Packet *ntPacket;
 };
 #endif

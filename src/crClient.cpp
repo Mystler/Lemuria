@@ -295,6 +295,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             BitStream bsIn(ntPacket->data, ntPacket->length, false);
             bsIn.IgnoreBytes(sizeof(MessageID));
 
+            ntMessage *msg = new ntMessage(ntPacket);
             int ntNetClientID;
             Entity *entPlayer;
             SceneNode *ndPlayer;
@@ -302,25 +303,25 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             String playerNode;
             stringstream playerNr;
             crPlayer* player;
+            ntMessage *out;
+            Vector3 pos;
 
-            switch(ntPacket->data[0]) {
+            switch(msg->getFlag()) {
                 case SPAWN_POSITION:
                     //get position and spawn
-                    bsIn.Read(ntClientID);
-                    bsIn.Read(x);
-                    bsIn.Read(y);
-                    bsIn.Read(z);
+                    ntClientID = msg->getClientID();
+                    pos = msg->readVector();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(ntClientID));
                     LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(x) + ", " +
                             StringConverter::toString(y) + ", " + StringConverter::toString(z));
-                    mCamera->setPosition(Vector3(x, y, z));
+                    mCamera->setPosition(pos);
                     ntServerAddress = ntPacket->systemAddress;
                     //send playername to server
-                    bsOut.Reset();
-                    bsOut.Write((MessageID)PLAYERNAME);
-                    bsOut.Write(ntClientID);
-                    bsOut.Write(ntPlayerName);
-                    ntPeer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+                    out = new ntMessage(ntClientID);
+                    out->setFlag(PLAYERNAME);
+                    out->writePlayerName(ntPlayerName);
+
+                    ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
                     ntConnected = true;

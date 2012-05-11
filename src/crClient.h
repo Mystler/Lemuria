@@ -63,6 +63,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "scObjectMgr.h"
 #include "3rdparty/ogremax/OgreMaxScene.hpp"
 #include "crPlayer.h"
+#include "ntMessage.h"
 
 using namespace Ogre;
 using namespace RakNet;
