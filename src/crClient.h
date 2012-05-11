@@ -50,6 +50,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgreOggSound.h>
 
+#include <vector>
+
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
 #include "RakNetTypes.h"
@@ -60,6 +62,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "phBullet.h"
 #include "scObjectMgr.h"
 #include "3rdparty/ogremax/OgreMaxScene.hpp"
+#include "crPlayer.h"
 
 using namespace Ogre;
 using namespace RakNet;
@@ -121,5 +124,6 @@ private:
     int ntClientID;
     Real ntPosSendTime, ntRotSendTime;
     Vector3 ntCurPos, ntCurDir;
+    std::vector<crPlayer*> players;
 };
 #endif

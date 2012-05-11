@@ -301,6 +301,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             String playerEnt;
             String playerNode;
             stringstream playerNr;
+            crPlayer* player;
 
             switch(ntPacket->data[0]) {
                 case SPAWN_POSITION:
@@ -371,6 +372,9 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer->attachObject(entPlayer);
                     ndPlayer->scale(Vector3(0.03f, 0.03f, 0.03f));
                     ndPlayer->setPosition(Vector3(x, y + 0.7f, z));
+
+                    player = new crPlayer(mSceneMgr, ntNetClientID, Vector3(x, y + 0.7f, z), 0);
+                    players.push_back(player);
                     break;
                 case DISCONNECT_PLAYER:
                     bsIn.Read(ntNetClientID);
@@ -386,6 +390,12 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                         mSceneMgr->destroySceneNode(playerNode);
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
+                    }
+                    for(int i = 0; i <= players.size()-1; i++) {
+                        if (players[i]->getClientID() == ntNetClientID) {
+                            players.erase(players.begin() + i);
+                            break;
+                        }
                     }
                     break;
                 default:
