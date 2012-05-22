@@ -22,7 +22,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 //ctor-----------------------------------
 //default--------------------------------
-crPlayer::crPlayer(SceneManager* sceneMgr)
+crPlayer::crPlayer(SceneManager *sceneMgr)
 : fSceneMgr(sceneMgr),
   fClientID(0),
   fIsWalking(0),
@@ -39,7 +39,7 @@ crPlayer::crPlayer(SceneManager* sceneMgr)
 
 //ctor---------------------------------
 //direction only-----------------------
-crPlayer::crPlayer(SceneManager* sceneMgr, int clientID, Vector3 vector, float yaw)
+crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float yaw)
 : fSceneMgr(sceneMgr),
   fClientID(clientID),
   fIsWalking(0),
@@ -56,7 +56,7 @@ crPlayer::crPlayer(SceneManager* sceneMgr, int clientID, Vector3 vector, float y
 
 //ctor---------------------------------
 //complete-----------------------------
-crPlayer::crPlayer(SceneManager* sceneMgr, int clientID, int walking, int turning, Vector3 vector, float yaw)
+crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, int walking, float turning, Vector3 vector, float yaw)
 : fSceneMgr(sceneMgr),
   fClientID(clientID),
   fIsWalking(walking),
@@ -66,13 +66,20 @@ crPlayer::crPlayer(SceneManager* sceneMgr, int clientID, int walking, int turnin
     playerNode = "ndPlayer";
     playerNr << fClientID;
     playerNode.append(playerNr.str());
-    if(fSceneMgr->hasSceneNode(playerNode)) {
+    if((fSceneMgr) && (fSceneMgr->hasSceneNode(playerNode))) {
         ndPlayer = fSceneMgr->getSceneNode(playerNode);
     }
 }
 
+void crPlayer::setSceneMgr(SceneManager *sceneMgr) {
+    fSceneMgr = sceneMgr;
+    if(fSceneMgr->hasSceneNode(playerNode))
+        ndPlayer = fSceneMgr->getSceneNode(playerNode);
+}
+
 void crPlayer::setToSavedPosition() {
     ndPlayer->setPosition(fPosition);
+    ndPlayer->setOrientation(Quaternion(Radian(fYaw), Vector3::UNIT_Y));
 }
 
 void crPlayer::setToPosition(Vector3 position) {
@@ -81,4 +88,45 @@ void crPlayer::setToPosition(Vector3 position) {
 
 void crPlayer::setToPosition(float x, float y, float z) {
     ndPlayer->setPosition(Vector3(x, y, z));
+}
+
+void crPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight) {
+    if((avWalk) && (!avWalkBack)) {
+        if((avWalkLeft) && (!avWalkRight))
+            fIsWalking = kWalkFL;
+        else if((avWalkRight) && (!avWalkLeft))
+            fIsWalking = kWalkFR;
+        else
+            fIsWalking = kWalkFore;
+    }
+    else if((avWalkBack) && (!avWalk)) {
+        if((avWalkLeft) && (!avWalkRight))
+            fIsWalking = kWalkBL;
+        else if((avWalkRight) && (!avWalkLeft))
+            fIsWalking = kWalkBR;
+        else
+            fIsWalking = kWalkBack;
+    }
+    else {
+        if((avWalkLeft) && (!avWalkRight))
+            fIsWalking = kWalkLeft;
+        else if((avWalkRight) && (!avWalkLeft))
+            fIsWalking = kWalkRight;
+        else
+            fIsWalking = kNoWalk;
+    }
+}
+
+int crPlayer::compare(crPlayer *player) {
+    int r = 0;
+    if (player->fIsWalking != fIsWalking)
+        r |= kWalk;
+    if (player->fIsTurning != fIsTurning)
+        r |= kTurn;
+    if (player->fPosition != fPosition)
+        r |= kPosition;
+    if (player->fYaw != fYaw)
+        r |= kYaw;
+
+    return r;
 }

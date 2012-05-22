@@ -23,10 +23,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 enum GameMessages {
     NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
     SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
-    POSITION_UPDATE = ID_USER_PACKET_ENUM + 3,
-    DIRECTION_UPDATE = ID_USER_PACKET_ENUM + 4,
-    PLAYERNAME = ID_USER_PACKET_ENUM + 5,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 6
+    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
+    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
+    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
 };
 
 crClient::crClient(void)
@@ -289,7 +288,8 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
 
     //Multiplayer
     if(ntMultiplayer) {
-        float x, y, z, yaw;
+        float yaw;
+        crPlayer *currPlayer;
 
         for(ntPacket = ntPeer->Receive(); ntPacket; ntPeer->DeallocatePacket(ntPacket), ntPacket = ntPeer->Receive()) {
             BitStream bsIn(ntPacket->data, ntPacket->length, false);
@@ -312,8 +312,8 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ntClientID = msg->getClientID();
                     pos = msg->readVector();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(ntClientID));
-                    LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(x) + ", " +
-                            StringConverter::toString(y) + ", " + StringConverter::toString(z));
+                    LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(pos.x) + ", " +
+                            StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
                     mCamera->setPosition(pos);
                     ntServerAddress = ntPacket->systemAddress;
                     //send playername to server
@@ -327,22 +327,21 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ntConnected = true;
                     LogManager::getSingletonPtr()->logMessage("MULTI: Server accepted connection");
                     break;
-                case POSITION_UPDATE:
-                    bsIn.Read(ntNetClientID);
-                    bsIn.Read(x);
-                    bsIn.Read(y);
-                    bsIn.Read(z);
+                case PLAYER_UPDATE:
+                    ntNetClientID = msg->getClientID();
+                    player = msg->readPlayer();
+                    player->setSceneMgr(mSceneMgr);
                     playerNode = "ndPlayer";
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     if(mSceneMgr->hasSceneNode(playerNode)) {
-                        ndPlayer = mSceneMgr->getSceneNode(playerNode);
-                        ndPlayer->setPosition(Vector3(x, y + 0.7f, z));
+                        players[searchForPlayer(ntNetClientID)] = player;
+                        player->setToSavedPosition();
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
                     break;
-                case DIRECTION_UPDATE:
+                /*case DIRECTION_UPDATE:
                     bsIn.Read(ntNetClientID);
                     bsIn.Read(yaw);
                     playerNode = "ndPlayer";
@@ -355,14 +354,13 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
                     break;
+                */
                 case NEW_CLIENT:
-                    bsIn.Read(ntNetClientID);
-                    bsIn.Read(x);
-                    bsIn.Read(y);
-                    bsIn.Read(z);
+                    ntNetClientID = msg->getClientID();
+                    pos = msg->readVector();
                     LogManager::getSingletonPtr()->logMessage("MULTI: New Client " +
-                            StringConverter::toString(ntNetClientID) + " - " + StringConverter::toString(x) +
-                            ", " + StringConverter::toString(y) + ", " + StringConverter::toString(z));
+                            StringConverter::toString(ntNetClientID) + " - " + StringConverter::toString(pos.x) +
+                            ", " + StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
                     playerEnt = "entPlayer";
                     playerNode = "ndPlayer";
                     playerNr << ntNetClientID;
@@ -372,9 +370,9 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer = mSceneMgr->getRootSceneNode()->createChildSceneNode(playerNode);
                     ndPlayer->attachObject(entPlayer);
                     ndPlayer->scale(Vector3(0.03f, 0.03f, 0.03f));
-                    ndPlayer->setPosition(Vector3(x, y + 0.7f, z));
+                    player = new crPlayer(mSceneMgr, ntNetClientID, pos, 0);
+                    player->setToSavedPosition();
 
-                    player = new crPlayer(mSceneMgr, ntNetClientID, Vector3(x, y + 0.7f, z), 0);
                     players.push_back(player);
                     break;
                 case DISCONNECT_PLAYER:
@@ -392,12 +390,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
-                    for(int i = 0; i <= players.size()-1; i++) {
-                        if (players[i]->getClientID() == ntNetClientID) {
-                            players.erase(players.begin() + i);
-                            break;
-                        }
-                    }
+                    players.erase(players.begin() + searchForPlayer(ntNetClientID));
                     break;
                 default:
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got msg with ID " + ntPacket->data[0]);
@@ -410,8 +403,25 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         if(!ntConnected) {
             throw Exception(Exception::ERR_INVALID_STATE, "No connection to the server! Multiplayer is set", "multiplayer.cfg");
         }
+        //check my Player for changes
+        ntCurDir = mCamera->getRealDirection();
+        yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
+        currPlayer = new crPlayer(mSceneMgr, ntClientID, Vector3(avPos.x, avPos.y - 1.8f, avPos.z), yaw);
+        currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
+        currPlayer->fIsTurning = int(rotate + 0.5);
+        int comp = 0;
+        if (myPlayer)
+            comp = currPlayer->compare(myPlayer);
+        if (((comp & crPlayer::kWalk) != 0) || ((comp & crPlayer::kTurn) != 0)) {
+            //there are interesting changes, so send the player
+            ntMessage *out = new ntMessage(ntClientID);
+            out->setFlag(PLAYER_UPDATE);
+            out->writePlayer(currPlayer);
+            ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+        }
+        myPlayer = currPlayer;
 
-        //send position every 0.1sec
+        /*send position every 0.1sec
         ntPosSendTime += evt.timeSinceLastFrame;
         if(ntPosSendTime >= 0.1f) {
             ntPosSendTime = 0;
@@ -440,6 +450,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             bsOut.Write(yaw);
             ntPeer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
         }
+        */
     }
 
     return true;
@@ -455,6 +466,17 @@ bool crClient::frameEnded(const FrameEvent &evt) {
     phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
     phBullet::getInstance().getDbgDrawer()->step();
     return true;
+}
+
+int crClient::searchForPlayer(int clientID) {
+    int r = 0;
+    for(int i = 0; i <= players.size()-1; i++) {
+        if (players[i]->getClientID() == clientID) {
+            r = i;
+            break;
+        }
+    }
+    return r;
 }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32

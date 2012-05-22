@@ -32,7 +32,7 @@ class crPlayer {
 public:
     //Variables
     int fIsWalking;
-    int fIsTurning;
+    float fIsTurning;
     Vector3 fPosition;
     float fYaw;
 
@@ -42,29 +42,37 @@ public:
         kWalkBack,
         kWalkLeft,
         kWalkRight,
+        kWalkFL,
+        kWalkFR,
+        kWalkBL,
+        kWalkBR,
     };
-    enum turningFalgs {
-        kNoTurn,
-        kTurnLeft,
-        kTurnRight,
+    enum compFlags {
+        kWalk = 1,
+        kTurn = 2,
+        kPosition = 4,
+        kYaw = 8,
     };
 
     //ctors
-    crPlayer(SceneManager* sceneMgr);
-    crPlayer(SceneManager* sceneMgr, int clientID, Vector3 vector, float yaw);
-    crPlayer(SceneManager* sceneMgr, int clientID, int walking, int turning, Vector3 vector, float yaw);
+    crPlayer(SceneManager *sceneMgr);
+    crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float yaw);
+    crPlayer(SceneManager *sceneMgr, int clientID, int walking, float turning, Vector3 vector, float yaw);
 
     int getClientID() { return fClientID; }
+    void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
 
     //functions
+    void setSceneMgr(SceneManager *sceneMgr);
     void setToSavedPosition();
     void setToPosition(Vector3 position);
     void setToPosition(float x, float y, float z);
+    int compare(crPlayer *player);
 private:
     int fClientID;
     SceneNode* ndPlayer;
     String playerNode;
     stringstream playerNr;
-    SceneManager* fSceneMgr;
+    SceneManager *fSceneMgr;
 };
 #endif

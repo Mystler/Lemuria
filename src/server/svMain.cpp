@@ -35,10 +35,9 @@ using namespace RakNet;
 enum GameMessages {
     NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
     SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
-    POSITION_UPDATE = ID_USER_PACKET_ENUM + 3,
-    DIRECTION_UPDATE = ID_USER_PACKET_ENUM + 4,
-    PLAYERNAME = ID_USER_PACKET_ENUM + 5,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 6
+    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
+    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
+    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
 };
 
 class Client {
@@ -79,8 +78,8 @@ int main(void) {
             std::cout << "\n\nNew Packet from:"
                 << packet->guid.g << std::endl;*/
 
-            int client_id = 0;
-            float x = 0, y = 0, z = 0, yaw = 0;
+            int client_id = 0, walking = 0;
+            float x = 0, y = 0, z = 0, yaw = 0, turning = 0;
             RakString client_name;
             client_name.Clear();
 
@@ -170,12 +169,15 @@ int main(void) {
                         }
                     }
                     break;
-                case POSITION_UPDATE:
+                case PLAYER_UPDATE:
                     bsIn.Read(client_id);
+                    bsIn.Read(walking);
+                    bsIn.Read(turning);
                     bsIn.Read(x);
                     bsIn.Read(y);
                     bsIn.Read(z);
-                    //printf("Client %i sent new position %f,%f,%f\n", client_id, x, y, z);
+                    bsIn.Read(yaw);
+                    //printf("Client %i sent new player: %i, %.2f, %.2f, %.2f, %.2f, %.2f \n", client_id, walking, turning, x, y, z, yaw);
 
                     clients[client_id].x = x;
                     clients[client_id].y = y;
@@ -183,11 +185,14 @@ int main(void) {
 
                     //std::cout << "Sending new position to each client\n";
                     bsOut.Reset();
-                    bsOut.Write((MessageID)POSITION_UPDATE);
+                    bsOut.Write((MessageID)PLAYER_UPDATE);
                     bsOut.Write(client_id);
+                    bsOut.Write(walking);
+                    bsOut.Write(turning);
                     bsOut.Write(x);
                     bsOut.Write(y);
                     bsOut.Write(z);
+                    bsOut.Write(yaw);
                     for(int i = 0; i < (int)clients.size(); ++i) {
                         if(client_id != i && !clients[i].offline) {
                             //std::cout << "  To: " << i << " - " << clients[i].guid.g << std::endl;
@@ -197,7 +202,7 @@ int main(void) {
                     }
                     bsOut.Reset();
                     break;
-                case DIRECTION_UPDATE:
+                /*case DIRECTION_UPDATE:
                     bsIn.Read(client_id);
                     bsIn.Read(yaw);
                     //printf("Client %i sent new direction %f\n", client_id, yaw);
@@ -218,6 +223,7 @@ int main(void) {
                     }
                     bsOut.Reset();
                     break;
+                */
                 case PLAYERNAME:
                     bsIn.Read(client_id);
                     bsIn.Read(client_name);

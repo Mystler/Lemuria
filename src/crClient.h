@@ -76,6 +76,7 @@ public:
     bool ntMultiplayer;
     String ntServerIP;
     RakString ntPlayerName;
+    int searchForPlayer(int clientID);
 private:
     crClient(void);
     virtual ~crClient(void);
@@ -126,5 +127,7 @@ private:
     Real ntPosSendTime, ntRotSendTime;
     Vector3 ntCurPos, ntCurDir;
     std::vector<crPlayer*> players;
+    crPlayer* myPlayer;
+    float rotate;
 };
 #endif
