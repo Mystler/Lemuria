@@ -3,9 +3,10 @@ add_subdirectory(server)
 set(CLIENT_HEADERS
     crClient.h
     crPlayer.h
+    ntMessage.h
+    phAvatarController.h
     phBullet.h
     scObjectMgr.h
-    ntMessage.h
 )
 
 set(CLIENT_SOURCES
@@ -13,9 +14,10 @@ set(CLIENT_SOURCES
     crKeyMgr.cpp
     crMouseMgr.cpp
     crPlayer.cpp
+    ntMessage.cpp
+    phAvatarController.cpp
     phBullet.cpp
     scObjectMgr.cpp
-    ntMessage.cpp
 )
 
 set(3rdparty
