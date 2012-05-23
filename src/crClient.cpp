@@ -358,6 +358,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                 case NEW_CLIENT:
                     ntNetClientID = msg->getClientID();
                     pos = msg->readVector();
+                    pos = Vector3(pos.x, pos.y - 0.8f, pos.z);
                     LogManager::getSingletonPtr()->logMessage("MULTI: New Client " +
                             StringConverter::toString(ntNetClientID) + " - " + StringConverter::toString(pos.x) +
                             ", " + StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
@@ -370,7 +371,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer = mSceneMgr->getRootSceneNode()->createChildSceneNode(playerNode);
                     ndPlayer->attachObject(entPlayer);
                     ndPlayer->scale(Vector3(0.03f, 0.03f, 0.03f));
-                    player = new crPlayer(mSceneMgr, ntNetClientID, pos, 0);
+                    player = new crPlayer(mSceneMgr, ntNetClientID, pos, Math::PI);
                     player->setToSavedPosition();
 
                     players.push_back(player);
@@ -406,7 +407,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         //check my Player for changes
         ntCurDir = mCamera->getRealDirection();
         yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
-        currPlayer = new crPlayer(mSceneMgr, ntClientID, Vector3(avPos.x, avPos.y - 1.8f, avPos.z), yaw);
+        currPlayer = new crPlayer(mSceneMgr, ntClientID, Vector3(avPos.x, avPos.y - 0.8f, avPos.z), yaw);
         currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
         currPlayer->fIsTurning = int(rotate + 0.5);
         int comp = 0;

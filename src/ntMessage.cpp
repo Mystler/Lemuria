@@ -45,7 +45,7 @@ ntMessage::~ntMessage() {
 
 //read
 Vector3 ntMessage::readVector() {
-    int x, y, z;
+    float x, y, z;
 
     streamIn.Read(x);
     streamIn.Read(y);
@@ -55,7 +55,8 @@ Vector3 ntMessage::readVector() {
 }
 
 crPlayer *ntMessage::readPlayer() {
-    int walking, turning, x, y, z;
+    int walking;
+    float turning, x, y, z;
     float yaw;
     crPlayer *player;
 
