@@ -28,7 +28,7 @@ enum GameMessages {
     DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
 };
 
-crClient::crClient(void)
+crClient::crClient()
     : mRoot(0),
       mWindow(0),
       mSceneMgr(0),
@@ -36,7 +36,7 @@ crClient::crClient(void)
       mGUIRenderer(0) {
 }
 
-crClient::~crClient(void) {
+crClient::~crClient() {
     //unload Multiplayer
     if(ntMultiplayer) {
         RakPeerInterface::DestroyInstance(ntPeer);

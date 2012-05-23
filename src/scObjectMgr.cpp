@@ -32,18 +32,7 @@ The nodes are filtered by their names and then handled like this:
 ------ Types are: <none yet>
 */
 
-scObjectMgr::scObjectMgr(void) {
-}
-
-scObjectMgr::~scObjectMgr(void) {
-}
-
 void scObjectMgr::processScene(SceneManager *sceneMgr) {
-    //get Physics World
-    btDynamicsWorld *phWorld = phBullet::getInstance().getWorld();
-    std::deque<btRigidBody *> phBodies = phBullet::getInstance().btBodies;
-    std::deque<btCollisionShape *> phShapes = phBullet::getInstance().btShapes;
-
     //iterate through the Nodes
     SceneNode *scRootNode = sceneMgr->getRootSceneNode();
     Node::ChildNodeIterator itSceneObject = scRootNode->getChildIterator();
@@ -64,9 +53,9 @@ void scObjectMgr::processScene(SceneManager *sceneMgr) {
             btDefaultMotionState *state = new btDefaultMotionState(btTransform(BtOgre::Convert::toBullet(rot),
                     BtOgre::Convert::toBullet(pos)));
             btRigidBody *body = new btRigidBody(0, state, shape, btVector3(0, 0, 0));
-            phWorld->addRigidBody(body);
-            phShapes.push_back(shape);
-            phBodies.push_back(body);
+            phBullet::getInstance().getWorld()->addRigidBody(body);
+            phBullet::getInstance().addShape(shape);
+            phBullet::getInstance().addBody(body);
         }
     }
 }

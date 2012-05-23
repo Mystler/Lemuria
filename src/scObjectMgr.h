@@ -29,8 +29,6 @@ using namespace Ogre;
 
 class scObjectMgr {
 public:
-    scObjectMgr(void);
-    virtual ~scObjectMgr(void);
     void processScene(SceneManager *sceneMgr);
 };
 #endif

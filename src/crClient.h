@@ -77,19 +77,19 @@ public:
     String ntServerIP;
     RakString ntPlayerName;
 private:
-    crClient(void);
-    virtual ~crClient(void);
-    virtual void windowResized(RenderWindow *rw);
-    virtual void windowClosed(RenderWindow *rw);
-    virtual bool frameRenderingQueued(const FrameEvent &evt);
-    virtual bool frameStarted(const FrameEvent &evt);
-    virtual bool frameEnded(const FrameEvent &evt);
-    virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
-    virtual bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
-    virtual bool mouseMoved(const OIS::MouseEvent &arg);
-    virtual bool keyPressed(const OIS::KeyEvent &arg);
-    virtual bool keyReleased(const OIS::KeyEvent &arg);
-    virtual void Scene01(void);
+    crClient();
+    ~crClient();
+    void windowResized(RenderWindow *rw);
+    void windowClosed(RenderWindow *rw);
+    bool frameRenderingQueued(const FrameEvent &evt);
+    bool frameStarted(const FrameEvent &evt);
+    bool frameEnded(const FrameEvent &evt);
+    bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseMoved(const OIS::MouseEvent &arg);
+    bool keyPressed(const OIS::KeyEvent &arg);
+    bool keyReleased(const OIS::KeyEvent &arg);
+    void Scene01(void);
     uint32_t searchForPlayer(uint32_t clientID);
 
     String mPluginsCfg;

@@ -20,7 +20,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "phBullet.h"
 
-phBullet::phBullet(void) {
+phBullet::phBullet() {
     //init Physics World
     btBroadphase = new btAxisSweep3(btVector3(-10000, -10000, -10000),
                                     btVector3(10000, 10000, 10000), 1024);
@@ -31,7 +31,7 @@ phBullet::phBullet(void) {
     btWorld->setGravity(btVector3(0, -46.9f, 0));
 }
 
-phBullet::~phBullet(void) {
+phBullet::~phBullet() {
     //clean up
     destroyPhysicals();
     delete btWorld;
@@ -52,7 +52,7 @@ void phBullet::initDebugDrawer(SceneManager *sceneMgr) {
     btWorld->setDebugDrawer(btDbgDrawer);
 }
 
-void phBullet::destroyPhysicals(void) {
+void phBullet::destroyPhysicals() {
     std::deque<btRigidBody *>::iterator itBody = btBodies.begin();
     while(btBodies.end() != itBody) {
         delete *itBody;
