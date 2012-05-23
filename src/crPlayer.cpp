@@ -25,8 +25,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 crPlayer::crPlayer(SceneManager *sceneMgr)
 : fSceneMgr(sceneMgr),
   fClientID(0),
-  fIsWalking(0),
-  fIsTurning(0),
+  fWalking(0),
+  fTurning(0),
   fPosition(Vector3(0,0,0)),
   fYaw(0) {
     playerNode = "ndPlayer";
@@ -42,8 +42,8 @@ crPlayer::crPlayer(SceneManager *sceneMgr)
 crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float yaw)
 : fSceneMgr(sceneMgr),
   fClientID(clientID),
-  fIsWalking(0),
-  fIsTurning(0),
+  fWalking(0),
+  fTurning(0),
   fPosition(vector),
   fYaw(yaw) {
     playerNode = "ndPlayer";
@@ -59,8 +59,8 @@ crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float y
 crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, int walking, float turning, Vector3 vector, float yaw)
 : fSceneMgr(sceneMgr),
   fClientID(clientID),
-  fIsWalking(walking),
-  fIsTurning(turning),
+  fWalking(walking),
+  fTurning(turning),
   fPosition(vector),
   fYaw(yaw) {
     playerNode = "ndPlayer";
@@ -93,39 +93,39 @@ void crPlayer::setToPosition(float x, float y, float z) {
 void crPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight) {
     if((avWalk) && (!avWalkBack)) {
         if((avWalkLeft) && (!avWalkRight))
-            fIsWalking = kWalkFL;
+            fWalking = kWalkFL;
         else if((avWalkRight) && (!avWalkLeft))
-            fIsWalking = kWalkFR;
+            fWalking = kWalkFR;
         else
-            fIsWalking = kWalkFore;
+            fWalking = kWalkFore;
     }
     else if((avWalkBack) && (!avWalk)) {
         if((avWalkLeft) && (!avWalkRight))
-            fIsWalking = kWalkBL;
+            fWalking = kWalkBL;
         else if((avWalkRight) && (!avWalkLeft))
-            fIsWalking = kWalkBR;
+            fWalking = kWalkBR;
         else
-            fIsWalking = kWalkBack;
+            fWalking = kWalkBack;
     }
     else {
         if((avWalkLeft) && (!avWalkRight))
-            fIsWalking = kWalkLeft;
+            fWalking = kWalkLeft;
         else if((avWalkRight) && (!avWalkLeft))
-            fIsWalking = kWalkRight;
+            fWalking = kWalkRight;
         else
-            fIsWalking = kNoWalk;
+            fWalking = kNoWalk;
     }
 }
 
-int crPlayer::compare(crPlayer *player) {
-    int r = 0;
-    if (player->fIsWalking != fIsWalking)
+uint32_t crPlayer::compare(crPlayer *player) {
+    uint32_t r = 0;
+    if (player->getWalking() != fWalking)
         r |= kWalk;
-    if (player->fIsTurning != fIsTurning)
+    if (player->getTurning() != fTurning)
         r |= kTurn;
-    if (player->fPosition != fPosition)
+    if (player->getPosition() != fPosition)
         r |= kPosition;
-    if (player->fYaw != fYaw)
+    if (player->getYaw() != fYaw)
         r |= kYaw;
 
     return r;

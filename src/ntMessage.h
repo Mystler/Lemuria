@@ -39,14 +39,14 @@ public:
     BitStream streamOut;
 
     //ctor
-    ntMessage(int clientID);
+    ntMessage(uint32_t clientID);
     ntMessage(Packet *packet);
     //dtor
     ntMessage::~ntMessage();
 
-    int getClientID() { return fClientID; }
-    int getFlag() { return ntFlag; }
-    void setFlag(int flag);
+    uint32_t getClientID() { return fClientID; }
+    uint32_t getFlag() { return ntFlag; }
+    void setFlag(uint32_t flag);
 
     //read
     Vector3 readVector();
@@ -57,7 +57,7 @@ public:
     void writePlayer(crPlayer *player);
 private:
     BitStream streamIn;
-    int fClientID;
+    uint32_t fClientID;
     MessageID ntFlag;
     Packet *ntPacket;
 };

@@ -42,13 +42,13 @@ enum GameMessages {
 
 class Client {
 public:
-    int id;
+    uint32_t id;
     float x, y, z, yaw;
     RakNetGUID guid;
     RakString name;
     bool offline;
 
-    Client(int passed_id) : id(passed_id) { }
+    Client(uint32_t passed_id) : id(passed_id) { }
 };
 
 int main(void) {
@@ -78,7 +78,7 @@ int main(void) {
             std::cout << "\n\nNew Packet from:"
                 << packet->guid.g << std::endl;*/
 
-            int client_id = 0, walking = 0;
+            uint32_t client_id = 0, walking = 0;
             float x = 0, y = 0, z = 0, yaw = 0, turning = 0;
             RakString client_name;
             client_name.Clear();
@@ -96,7 +96,7 @@ int main(void) {
                 case ID_NEW_INCOMING_CONNECTION:
                     printf("New conection incoming.\n");
                     client_id = (int)clients.size();
-                    if((int)clients.size() > 0) {
+                    if(clients.size() > 0) {
                         std::cout << "Sending new spawn position to other clients\n";
                         bsOut.Reset();
                         bsOut.Write((MessageID)NEW_CLIENT);
@@ -104,7 +104,7 @@ int main(void) {
                         bsOut.Write(0.0f);
                         bsOut.Write(1.8f);
                         bsOut.Write(0.0f);
-                        for(int i = 0; i < (int)clients.size(); ++i) {
+                        for(size_t i = 0; i < clients.size(); ++i) {
                             if(!clients[i].offline) {
                                 //std::cout << "  To: " << i << " - " << clients[i].guid.g << std::endl;
                                 peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
@@ -114,7 +114,7 @@ int main(void) {
                         bsOut.Reset();
 
                         std::cout << "Sending other client positions to new client\n";
-                        for(int i = 0; i < (int)clients.size(); ++i) {
+                        for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
                                 std::cout << "sending for " << i << std::endl;
                                 bsOut.Reset();
@@ -150,7 +150,7 @@ int main(void) {
                 case ID_CONNECTION_LOST:
                     printf("A client lost the connection.\n");
                 case ID_DISCONNECTION_NOTIFICATION:
-                    for(int i = 0; i < (int)clients.size(); ++i) {
+                    for(size_t i = 0; i < clients.size(); i++) {
                         if(clients[i].guid == packet->guid) {
                             client_id = clients[i].id;
                             client_name = clients[i].name;
@@ -159,7 +159,7 @@ int main(void) {
                             bsOut.Reset();
                             bsOut.Write((MessageID)DISCONNECT_PLAYER);
                             bsOut.Write(client_id);
-                            for(int j = 0; j < (int)clients.size(); ++j) {
+                            for(size_t j = 0; j < clients.size(); ++j) {
                                 if(!clients[j].offline) {
                                     peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                                                peer->GetSystemAddressFromGuid(clients[j].guid), false);
@@ -193,7 +193,7 @@ int main(void) {
                     bsOut.Write(y);
                     bsOut.Write(z);
                     bsOut.Write(yaw);
-                    for(int i = 0; i < (int)clients.size(); ++i) {
+                    for(size_t i = 0; i < clients.size(); i++) {
                         if(client_id != i && !clients[i].offline) {
                             //std::cout << "  To: " << i << " - " << clients[i].guid.g << std::endl;
                             peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0,

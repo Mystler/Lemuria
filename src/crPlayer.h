@@ -30,12 +30,6 @@ using namespace Ogre;
 
 class crPlayer {
 public:
-    //Variables
-    int fIsWalking;
-    float fIsTurning;
-    Vector3 fPosition;
-    float fYaw;
-
     enum walkingFlags {
         kNoWalk,
         kWalkFore,
@@ -59,7 +53,12 @@ public:
     crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float yaw);
     crPlayer(SceneManager *sceneMgr, int clientID, int walking, float turning, Vector3 vector, float yaw);
 
-    int getClientID() { return fClientID; }
+    uint32_t getClientID() { return fClientID; }
+    uint32_t getWalking() { return fWalking; }
+    void setTurning(float turning) { fTurning = turning; }
+    float getTurning() { return fTurning; }
+    float getYaw() { return fYaw; }
+    Vector3 getPosition() { return fPosition; }
     void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
 
     //functions
@@ -67,9 +66,11 @@ public:
     void setToSavedPosition();
     void setToPosition(Vector3 position);
     void setToPosition(float x, float y, float z);
-    int compare(crPlayer *player);
+    uint32_t compare(crPlayer *player);
 private:
-    int fClientID;
+    uint32_t fClientID, fWalking;
+    float fTurning, fYaw;
+    Vector3 fPosition;
     SceneNode* ndPlayer;
     String playerNode;
     stringstream playerNr;

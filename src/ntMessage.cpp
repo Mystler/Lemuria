@@ -22,7 +22,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 //ctor---------------------
 //out----------------------
-ntMessage::ntMessage(int clientID)
+ntMessage::ntMessage(uint32_t clientID)
 : fClientID(clientID) {
 }
 
@@ -55,7 +55,7 @@ Vector3 ntMessage::readVector() {
 }
 
 crPlayer *ntMessage::readPlayer() {
-    int walking;
+    uint32_t walking;
     float turning, x, y, z;
     float yaw;
     crPlayer *player;
@@ -71,7 +71,7 @@ crPlayer *ntMessage::readPlayer() {
     return player;
 }
 
-void ntMessage::setFlag(int flag) {
+void ntMessage::setFlag(uint32_t flag) {
     ntFlag = (MessageID)flag;
     streamOut.Write(ntFlag);
     streamOut.Write(fClientID);
@@ -79,12 +79,12 @@ void ntMessage::setFlag(int flag) {
 
 //write
 void ntMessage::writePlayer(crPlayer *player) {
-    streamOut.Write(player->fIsWalking);
-    streamOut.Write(player->fIsTurning);
-    streamOut.Write(player->fPosition.x);
-    streamOut.Write(player->fPosition.y);
-    streamOut.Write(player->fPosition.z);
-    streamOut.Write(player->fYaw);
+    streamOut.Write(player->getWalking());
+    streamOut.Write(player->getTurning());
+    streamOut.Write(player->getPosition().x);
+    streamOut.Write(player->getPosition().y);
+    streamOut.Write(player->getPosition().z);
+    streamOut.Write(player->getYaw());
 }
 
 void ntMessage::writePlayerName(RakString name) {

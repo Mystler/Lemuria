@@ -76,7 +76,6 @@ public:
     bool ntMultiplayer;
     String ntServerIP;
     RakString ntPlayerName;
-    int searchForPlayer(int clientID);
 private:
     crClient(void);
     virtual ~crClient(void);
@@ -90,6 +89,9 @@ private:
     virtual bool mouseMoved(const OIS::MouseEvent &arg);
     virtual bool keyPressed(const OIS::KeyEvent &arg);
     virtual bool keyReleased(const OIS::KeyEvent &arg);
+    virtual void Scene01(void);
+    uint32_t searchForPlayer(uint32_t clientID);
+
     String mPluginsCfg;
     Root *mRoot;
     RenderWindow *mWindow;
@@ -116,14 +118,13 @@ private:
     Viewport *vp;
     OgreMax::OgreMaxScene scMgr;
     scObjectMgr scObjMgr;
-    virtual void Scene01(void);
     //Multiplayer
     RakPeerInterface *ntPeer;
     Packet *ntPacket;
     SystemAddress ntServerAddress;
     BitStream bsOut;
     bool ntConnected;
-    int ntClientID;
+    uint32_t ntClientID;
     Real ntPosSendTime, ntRotSendTime;
     Vector3 ntCurPos, ntCurDir;
     std::vector<crPlayer*> players;

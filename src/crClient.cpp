@@ -196,7 +196,7 @@ void crClient::Scene01(void) {
 }
 
 void crClient::windowResized(RenderWindow *rw) {
-    unsigned int width, height, depth;
+    uint32_t width, height, depth;
     int left, top;
     rw->getMetrics(width, height, depth, left, top);
 
@@ -296,7 +296,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             bsIn.IgnoreBytes(sizeof(MessageID));
 
             ntMessage *msg = new ntMessage(ntPacket);
-            int ntNetClientID;
+            uint32_t ntNetClientID;
             Entity *entPlayer;
             SceneNode *ndPlayer;
             String playerEnt;
@@ -409,11 +409,11 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
         currPlayer = new crPlayer(mSceneMgr, ntClientID, Vector3(avPos.x, avPos.y - 0.8f, avPos.z), yaw);
         currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
-        currPlayer->fIsTurning = int(rotate + 0.5);
-        int comp = 0;
-        if (myPlayer)
+        currPlayer->setTurning(int(rotate + 0.5));
+        uint32_t comp = 0;
+        if(myPlayer)
             comp = currPlayer->compare(myPlayer);
-        if (((comp & crPlayer::kWalk) != 0) || ((comp & crPlayer::kTurn) != 0)) {
+        if(((comp & crPlayer::kWalk) != 0) || ((comp & crPlayer::kTurn) != 0)) {
             //there are interesting changes, so send the player
             ntMessage *out = new ntMessage(ntClientID);
             out->setFlag(PLAYER_UPDATE);
@@ -469,10 +469,10 @@ bool crClient::frameEnded(const FrameEvent &evt) {
     return true;
 }
 
-int crClient::searchForPlayer(int clientID) {
-    int r = 0;
-    for(int i = 0; i <= players.size()-1; i++) {
-        if (players[i]->getClientID() == clientID) {
+uint32_t crClient::searchForPlayer(uint32_t clientID) {
+    uint32_t r = 0;
+    for(size_t i = 0; i < players.size(); i++) {
+        if(players[i]->getClientID() == clientID) {
             r = i;
             break;
         }
