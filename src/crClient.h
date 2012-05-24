@@ -59,11 +59,12 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 27015
 
+#include "crPlayer.h"
+#include "ntMessage.h"
+#include "phAvatarController.h"
 #include "phBullet.h"
 #include "scObjectMgr.h"
 #include "3rdparty/ogremax/OgreMaxScene.hpp"
-#include "crPlayer.h"
-#include "ntMessage.h"
 
 using namespace Ogre;
 using namespace RakNet;
@@ -92,24 +93,24 @@ private:
     void Scene01(void);
     uint32_t searchForPlayer(uint32_t clientID);
 
+    //Rendering
     String mPluginsCfg;
     Root *mRoot;
     RenderWindow *mWindow;
     SceneManager *mSceneMgr;
-    OIS::InputManager *mInputManager;
-    OIS::Mouse *mMouse;
-    OIS::Keyboard *mKeyboard;
-    //Physics
-    btRigidBody *phAvatar;
     bool btWireframe;
     //GUI
     CEGUI::Renderer *mGUIRenderer;
     //Sound
     OgreOggSound::OgreOggSoundManager *mSoundManager;
     //OIS Input
+    OIS::InputManager *mInputManager;
+    OIS::Mouse *mMouse;
+    OIS::Keyboard *mKeyboard;
     bool kShiftDown;
     //AvatarMovement
-    Real avWalkSpeed, avRotateSpeed, avJumpTime;
+    phAvatarController *phAvatar;
+    Real avWalkSpeed, avRotateSpeed;
     bool avMouseLook;
     bool avWalk, avWalkBack, avWalkLeft, avWalkRight;
     bool avJump, avFly;

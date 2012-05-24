@@ -185,7 +185,7 @@ void crClient::Scene01(void) {
     //create Avatar
     SceneNode *avatarNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("avatarNode");
     avatarNode->setPosition(Vector3(0, 1, 0));
-    phAvatar = phBullet::getInstance().createPhysicalAvatar(avatarNode);
+    phAvatar = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(avatarNode));
 
     scMgr.Load("test.scene", mWindow, 0, mSceneMgr);
     scObjMgr.processScene(mSceneMgr);
@@ -247,9 +247,9 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     } else {
         avWalkDir = Vector3(mCamera->getDirection().x, 0, mCamera->getDirection().z);
     }
-    avWalkDir = avWalkDir / avWalkDir.length();
     Vector3 avWalkLeftDir = Vector3(mCamera->getDirection().z, 0, -mCamera->getDirection().x);
-    avWalkLeftDir = avWalkLeftDir / avWalkLeftDir.length();
+    avWalkDir.normalise();
+    avWalkLeftDir.normalise();
 
     Vector3 direction = Vector3::ZERO;
     if(avWalk)
@@ -261,28 +261,20 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     if(avWalkRight)
         direction -= avWalkLeftDir;
     if(direction != Vector3::ZERO)
-        direction = direction / direction.length();
+        direction.normalise();
 
     if(avFly) {
         if(avWalk || avWalkBack || avWalkLeft || avWalkRight)
             mCamera->move(avWalkSpeed * direction * evt.timeSinceLastFrame);
     } else {
-        phAvatar->setLinearVelocity(btScalar(avWalkSpeed) * BtOgre::Convert::toBullet(direction));
-        btTransform xform;
-        phAvatar->getMotionState()->getWorldTransform(xform);
-        Vector3 avCamPos = BtOgre::Convert::toOgre(xform.getOrigin()) + Vector3(0, 0.7f, 0);
+        phAvatar->move(avWalkSpeed, direction, mCamera->getOrientation().getYaw().valueRadians());
+        Vector3 avCamPos = phAvatar->getPosition() + Vector3(0, 0.7f, 0);
         mCamera->setPosition(avCamPos);
-        btQuaternion avCamRot = btQuaternion(btVector3(0, 1, 0), mCamera->getOrientation().getYaw().valueRadians());
-        xform.setRotation(avCamRot);
-        phAvatar->getMotionState()->setWorldTransform(xform);
-        phAvatar->setCenterOfMassTransform(xform);
     }
 
     if(avJump) {
-        if(phBullet::getInstance().avatarOnGround(phAvatar)) {
-            btScalar magnitude = (1 / phAvatar->getInvMass()) * 16;
-            phAvatar->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
-        }
+        if(phAvatar->avatarOnGround())
+            phAvatar->jump();
         avJump = false;
     }
 

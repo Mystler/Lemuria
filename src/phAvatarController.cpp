@@ -20,5 +20,51 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "phAvatarController.h"
 
-phAvatarController::phAvatarController() {
+phAvatarController::phAvatarController(btRigidBody *body)
+: fBody(body) {
+}
+
+void phAvatarController::move(Real walkSpeed, Vector3 direction, Real yaw) {
+    fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
+    btQuaternion rot = btQuaternion(btVector3(0, 1, 0), yaw);
+    btTransform xform = getTransform();
+    xform.setRotation(rot);
+    setTransform(xform);
+}
+
+void phAvatarController::jump() {
+    btScalar magnitude = (1 / fBody->getInvMass()) * 16;
+    fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
+}
+
+bool phAvatarController::avatarOnGround() {
+    btVector3 avPos = BtOgre::Convert::toBullet(getPosition());
+    btVector3 avToGround = avPos + btVector3(0, -1.1f, 0);
+    btDynamicsWorld::ClosestRayResultCallback groundRay(avPos, avToGround);
+    phBullet::getInstance().getWorld()->rayTest(avPos, avToGround, groundRay);
+    if(groundRay.hasHit()) {
+        return true;
+    }
+    return false;
+}
+
+btTransform phAvatarController::getTransform() {
+    btTransform xform;
+    fBody->getMotionState()->getWorldTransform(xform);
+    return xform;
+}
+
+void phAvatarController::setTransform(btTransform xform) {
+    fBody->getMotionState()->setWorldTransform(xform);
+    fBody->setCenterOfMassTransform(xform);
+}
+
+Vector3 phAvatarController::getPosition() {
+    return BtOgre::Convert::toOgre(getTransform().getOrigin());
+}
+
+void phAvatarController::setPosition(Vector3 pos) {
+    btTransform xform = getTransform();
+    xform.setOrigin(BtOgre::Convert::toBullet(pos));
+    setTransform(xform);
 }

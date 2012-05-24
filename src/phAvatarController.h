@@ -27,6 +27,16 @@ using namespace Ogre;
 
 class phAvatarController {
 public:
-    phAvatarController();
+    phAvatarController(btRigidBody *body);
+    void move(Real walkSpeed, Vector3 direction, Real yaw);
+    void jump();
+    bool avatarOnGround();
+
+    btTransform getTransform();
+    void setTransform(btTransform xform);
+    Vector3 getPosition();
+    void setPosition(Vector3 pos);
+private:
+    btRigidBody *fBody;
 };
 #endif

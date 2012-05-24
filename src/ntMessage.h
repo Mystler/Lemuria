@@ -42,7 +42,7 @@ public:
     ntMessage(uint32_t clientID);
     ntMessage(Packet *packet);
     //dtor
-    ntMessage::~ntMessage();
+    ~ntMessage();
 
     uint32_t getClientID() { return fClientID; }
     uint32_t getFlag() { return ntFlag; }

@@ -35,7 +35,6 @@ public:
     void initDebugDrawer(SceneManager *sceneMgr);
     void destroyPhysicals();
     btRigidBody *createPhysicalAvatar(SceneNode *avatarNode);
-    bool avatarOnGround(btRigidBody *avatar);
     void addBody(btRigidBody *body) { btBodies.push_back(body); }
     void addShape(btCollisionShape *shape) { btShapes.push_back(shape); }
 private:

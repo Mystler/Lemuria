@@ -94,16 +94,3 @@ btRigidBody *phBullet::createPhysicalAvatar(SceneNode *avatarNode) {
 
     return avatarBody;
 }
-
-bool phBullet::avatarOnGround(btRigidBody *avatar) {
-    btTransform xform;
-    avatar->getMotionState()->getWorldTransform(xform);
-    btVector3 avPos = xform.getOrigin();
-    btVector3 avToGround = avPos + btVector3(0, -1.1f, 0);
-    btDynamicsWorld::ClosestRayResultCallback groundRay(avPos, avToGround);
-    btWorld->rayTest(avPos, avToGround, groundRay);
-    if(groundRay.hasHit()) {
-        return true;
-    }
-    return false;
-}
