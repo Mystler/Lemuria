@@ -361,6 +361,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer = mSceneMgr->getRootSceneNode()->createChildSceneNode(playerNode);
                     ndPlayer->attachObject(entPlayer);
                     ndPlayer->scale(Vector3(0.03f, 0.03f, 0.03f));
+                    ndPlayer->translate(Vector3(0, -0.1f, 0));
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
                     player = new crPlayer(mSceneMgr, ntNetClientID, pos, Math::PI);
                     player->setController(playerCtrl);
@@ -403,6 +404,8 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         crPlayer *currPlayer = new crPlayer(mSceneMgr, ntClientID, phAvatar->getPosition(), yaw);
         currPlayer->setController(phAvatar);
         currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
+        if(kShiftDown)
+            currPlayer->setRunning();
         currPlayer->setTurning(int(rotate + 0.5));
         uint32_t comp = 0;
         if(myPlayer)
@@ -420,8 +423,12 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         for(size_t i = 0; i < players.size(); i++) {
             crPlayer *netPlayer = players[i];
             phAvatarController *netAvCtrl = netPlayer->getController();
-            if(netPlayer->getWalking() != crPlayer::kNoWalk)
-                netAvCtrl->move(2, netPlayer->getWalkDir());
+            if(netPlayer->getWalking() != crPlayer::kNoWalk) {
+                float speed = 2;
+                if((netPlayer->getWalking() & crPlayer::kRun) != 0)
+                    speed = 4;
+                netAvCtrl->move(speed, netPlayer->getWalkDir());
+            }
             if(netPlayer->getTurning() != 0)
                 netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);
         }

@@ -37,6 +37,7 @@ public:
         kWalkBack = 2,
         kWalkLeft = 4,
         kWalkRight = 8,
+        kRun = 16,
     };
     enum compFlags {
         kWalk = 1,
@@ -58,6 +59,7 @@ public:
     Vector3 getPosition() { return fPosition; }
     phAvatarController *getController() { return avCtrl; }
     void setController(phAvatarController *ctrl) { avCtrl = ctrl; }
+    void setRunning() { fWalking |= kRun; }
     void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
     Vector3 getWalkDir();
 
