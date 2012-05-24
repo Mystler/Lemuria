@@ -39,6 +39,11 @@ public:
         kWalkRight = 8,
         kRun = 16,
     };
+    enum turningFlags {
+        kNoTurn = 0,
+        kTurnLeft = 1,
+        kTurnRight = 2,
+    };
     enum compFlags {
         kWalk = 1,
         kTurn = 2,
@@ -49,29 +54,30 @@ public:
     //ctors
     crPlayer(SceneManager *sceneMgr);
     crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float yaw);
-    crPlayer(SceneManager *sceneMgr, int clientID, int walking, float turning, Vector3 vector, float yaw);
+    crPlayer(SceneManager *sceneMgr, int clientID, int walking, int turning, Vector3 vector, float yaw);
 
     uint32_t getClientID() { return fClientID; }
     uint32_t getWalking() { return fWalking; }
-    void setTurning(float turning) { fTurning = turning; }
-    float getTurning() { return fTurning; }
+    void setTurning(int turning) { fTurning = turning; }
+    uint32_t getTurning() { return fTurning; }
     float getYaw() { return fYaw; }
     Vector3 getPosition() { return fPosition; }
     phAvatarController *getController() { return avCtrl; }
     void setController(phAvatarController *ctrl) { avCtrl = ctrl; }
     void setRunning() { fWalking |= kRun; }
-    void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
-    Vector3 getWalkDir();
 
     //functions
     void setSceneMgr(SceneManager *sceneMgr);
     void setToSavedPosition();
     void setToPosition(Vector3 position);
     void setToPosition(float x, float y, float z);
+    void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
+    void convertRotToFlag(float rotSpeed);
+    Vector3 getWalkDir();
     uint32_t compare(crPlayer *player);
 private:
-    uint32_t fClientID, fWalking;
-    float fTurning, fYaw;
+    uint32_t fClientID, fWalking, fTurning;
+    float fYaw;
     Vector3 fPosition;
     SceneNode* ndPlayer;
     String playerNode;

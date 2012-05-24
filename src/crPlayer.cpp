@@ -110,6 +110,14 @@ void crPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, b
         fWalking |= kWalkRight;
 }
 
+void crPlayer::convertRotToFlag(float rotSpeed) {
+    fTurning = kNoTurn;
+    if(rotSpeed < 0)
+        fTurning |= kTurnLeft;
+    if(rotSpeed > 0)
+        fTurning |= kTurnRight;
+}
+
 Vector3 crPlayer::getWalkDir() {
     if(!avCtrl)
         return Vector3::ZERO;

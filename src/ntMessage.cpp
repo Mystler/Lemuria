@@ -43,6 +43,13 @@ ntMessage::~ntMessage() {
     streamOut.Reset();
 }
 
+
+void ntMessage::setFlag(uint32_t flag) {
+    ntFlag = (MessageID)flag;
+    streamOut.Write(ntFlag);
+    streamOut.Write(fClientID);
+}
+
 //read
 Vector3 ntMessage::readVector() {
     float x, y, z;
@@ -69,12 +76,6 @@ crPlayer *ntMessage::readPlayer() {
 
     player = new crPlayer(0, fClientID, walking, turning, Vector3(x, y, z), yaw);
     return player;
-}
-
-void ntMessage::setFlag(uint32_t flag) {
-    ntFlag = (MessageID)flag;
-    streamOut.Write(ntFlag);
-    streamOut.Write(fClientID);
 }
 
 //write
