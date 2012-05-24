@@ -25,21 +25,18 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include <OgreString.h>
 #include <OgreSceneNode.h>
 #include <OgreSceneManager.h>
+#include "phAvatarController.h"
 
 using namespace Ogre;
 
 class crPlayer {
 public:
     enum walkingFlags {
-        kNoWalk,
-        kWalkFore,
-        kWalkBack,
-        kWalkLeft,
-        kWalkRight,
-        kWalkFL,
-        kWalkFR,
-        kWalkBL,
-        kWalkBR,
+        kNoWalk = 0,
+        kWalkForward = 1,
+        kWalkBack = 2,
+        kWalkLeft = 4,
+        kWalkRight = 8,
     };
     enum compFlags {
         kWalk = 1,
@@ -59,7 +56,10 @@ public:
     float getTurning() { return fTurning; }
     float getYaw() { return fYaw; }
     Vector3 getPosition() { return fPosition; }
+    phAvatarController *getController() { return avCtrl; }
+    void setController(phAvatarController *ctrl) { avCtrl = ctrl; }
     void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
+    Vector3 getWalkDir();
 
     //functions
     void setSceneMgr(SceneManager *sceneMgr);
@@ -75,5 +75,6 @@ private:
     String playerNode;
     stringstream playerNr;
     SceneManager *fSceneMgr;
+    phAvatarController *avCtrl;
 };
 #endif

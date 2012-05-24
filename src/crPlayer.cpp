@@ -32,9 +32,8 @@ crPlayer::crPlayer(SceneManager *sceneMgr)
     playerNode = "ndPlayer";
     playerNr << fClientID;
     playerNode.append(playerNr.str());
-    if(fSceneMgr->hasSceneNode(playerNode)) {
+    if(fSceneMgr->hasSceneNode(playerNode))
         ndPlayer = fSceneMgr->getSceneNode(playerNode);
-    }
 }
 
 //ctor---------------------------------
@@ -49,9 +48,8 @@ crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float y
     playerNode = "ndPlayer";
     playerNr << fClientID;
     playerNode.append(playerNr.str());
-    if(fSceneMgr->hasSceneNode(playerNode)) {
+    if(fSceneMgr->hasSceneNode(playerNode))
         ndPlayer = fSceneMgr->getSceneNode(playerNode);
-    }
 }
 
 //ctor---------------------------------
@@ -66,9 +64,8 @@ crPlayer::crPlayer(SceneManager *sceneMgr, int clientID, int walking, float turn
     playerNode = "ndPlayer";
     playerNr << fClientID;
     playerNode.append(playerNr.str());
-    if((fSceneMgr) && (fSceneMgr->hasSceneNode(playerNode))) {
+    if((fSceneMgr) && (fSceneMgr->hasSceneNode(playerNode)))
         ndPlayer = fSceneMgr->getSceneNode(playerNode);
-    }
 }
 
 void crPlayer::setSceneMgr(SceneManager *sceneMgr) {
@@ -78,43 +75,63 @@ void crPlayer::setSceneMgr(SceneManager *sceneMgr) {
 }
 
 void crPlayer::setToSavedPosition() {
-    ndPlayer->setPosition(fPosition);
-    ndPlayer->setOrientation(Quaternion(Radian(fYaw), Vector3::UNIT_Y));
+    if(avCtrl) {
+        avCtrl->setPosition(fPosition);
+        avCtrl->setYaw(fYaw);
+    } else {
+        ndPlayer->setPosition(fPosition);
+        ndPlayer->setOrientation(Quaternion(Radian(fYaw), Vector3::UNIT_Y));
+    }
 }
 
 void crPlayer::setToPosition(Vector3 position) {
-    ndPlayer->setPosition(position);
+    if(avCtrl)
+        avCtrl->setPosition(position);
+    else
+        ndPlayer->setPosition(position);
 }
 
 void crPlayer::setToPosition(float x, float y, float z) {
-    ndPlayer->setPosition(Vector3(x, y, z));
+    if(avCtrl)
+        avCtrl->setPosition(Vector3(x, y, z));
+    else
+        ndPlayer->setPosition(Vector3(x, y, z));
 }
 
 void crPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight) {
-    if((avWalk) && (!avWalkBack)) {
-        if((avWalkLeft) && (!avWalkRight))
-            fWalking = kWalkFL;
-        else if((avWalkRight) && (!avWalkLeft))
-            fWalking = kWalkFR;
-        else
-            fWalking = kWalkFore;
-    }
-    else if((avWalkBack) && (!avWalk)) {
-        if((avWalkLeft) && (!avWalkRight))
-            fWalking = kWalkBL;
-        else if((avWalkRight) && (!avWalkLeft))
-            fWalking = kWalkBR;
-        else
-            fWalking = kWalkBack;
-    }
-    else {
-        if((avWalkLeft) && (!avWalkRight))
-            fWalking = kWalkLeft;
-        else if((avWalkRight) && (!avWalkLeft))
-            fWalking = kWalkRight;
-        else
-            fWalking = kNoWalk;
-    }
+    fWalking = kNoWalk;
+    if(avWalk)
+        fWalking |= kWalkForward;
+    if(avWalkBack)
+        fWalking |= kWalkBack;
+    if(avWalkLeft)
+        fWalking |= kWalkLeft;
+    if(avWalkRight)
+        fWalking |= kWalkRight;
+}
+
+Vector3 crPlayer::getWalkDir() {
+    if(!avCtrl)
+        return Vector3::ZERO;
+    Quaternion rot = BtOgre::Convert::toOgre(avCtrl->getTransform().getRotation());
+    Vector3 frontDir = rot.zAxis();
+    Vector3 leftDir = Vector3(frontDir.z, 0, -frontDir.x);
+    frontDir.normalise();
+    leftDir.normalise();
+
+    Vector3 dir = Vector3::ZERO;
+    if((fWalking & kWalkForward) != 0)
+        dir += frontDir;
+    if((fWalking & kWalkBack) != 0)
+        dir -= frontDir;
+    if((fWalking & kWalkLeft) != 0)
+        dir += leftDir;
+    if((fWalking & kWalkRight) != 0)
+        dir -= leftDir;
+    if(dir != Vector3::ZERO)
+        dir.normalise();
+
+    return dir;
 }
 
 uint32_t crPlayer::compare(crPlayer *player) {

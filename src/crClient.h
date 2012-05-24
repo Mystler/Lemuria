@@ -80,6 +80,7 @@ public:
 private:
     crClient();
     ~crClient();
+    void Scene01();
     void windowResized(RenderWindow *rw);
     void windowClosed(RenderWindow *rw);
     bool frameRenderingQueued(const FrameEvent &evt);
@@ -90,7 +91,6 @@ private:
     bool mouseMoved(const OIS::MouseEvent &arg);
     bool keyPressed(const OIS::KeyEvent &arg);
     bool keyReleased(const OIS::KeyEvent &arg);
-    void Scene01(void);
     uint32_t searchForPlayer(uint32_t clientID);
 
     //Rendering
@@ -110,7 +110,7 @@ private:
     bool kShiftDown;
     //AvatarMovement
     phAvatarController *phAvatar;
-    Real avWalkSpeed, avRotateSpeed;
+    float avWalkSpeed, avRotateSpeed;
     bool avMouseLook;
     bool avWalk, avWalkBack, avWalkLeft, avWalkRight;
     bool avJump, avFly;
@@ -126,7 +126,7 @@ private:
     BitStream bsOut;
     bool ntConnected;
     uint32_t ntClientID;
-    Real ntPosSendTime, ntRotSendTime;
+    float ntPosSendTime, ntRotSendTime;
     Vector3 ntCurPos, ntCurDir;
     std::vector<crPlayer*> players;
     crPlayer* myPlayer;

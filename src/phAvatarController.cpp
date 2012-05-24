@@ -24,15 +24,22 @@ phAvatarController::phAvatarController(btRigidBody *body)
 : fBody(body) {
 }
 
-void phAvatarController::move(Real walkSpeed, Vector3 direction, Real yaw) {
+phAvatarController::~phAvatarController() {
+    delete fBody;
+}
+
+void phAvatarController::move(float walkSpeed, Vector3 direction) {
     fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
-    btQuaternion rot = btQuaternion(btVector3(0, 1, 0), yaw);
-    btTransform xform = getTransform();
-    xform.setRotation(rot);
-    setTransform(xform);
+}
+
+void phAvatarController::move(float walkSpeed, Vector3 direction, float yaw) {
+    fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
+    setYaw(yaw);
 }
 
 void phAvatarController::jump() {
+    if(!avatarOnGround())
+        return;
     btScalar magnitude = (1 / fBody->getInvMass()) * 16;
     fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
 }
@@ -66,5 +73,12 @@ Vector3 phAvatarController::getPosition() {
 void phAvatarController::setPosition(Vector3 pos) {
     btTransform xform = getTransform();
     xform.setOrigin(BtOgre::Convert::toBullet(pos));
+    setTransform(xform);
+}
+
+void phAvatarController::setYaw(float yaw) {
+    btQuaternion rot = btQuaternion(btVector3(0, 1, 0), yaw);
+    btTransform xform = getTransform();
+    xform.setRotation(rot);
     setTransform(xform);
 }
