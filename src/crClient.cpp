@@ -20,6 +20,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "crClient.h"
 
+#define kWalkSpeed 100
+#define kRunSpeed 200
+
 enum GameMessages {
     NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
     SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
@@ -152,8 +155,8 @@ bool crClient::init(void) {
     CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
 
     //init OgreOggSound
-    mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
-    mSoundManager->init();
+    //mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+    //mSoundManager->init();
 
     //let there be light
     Scene01();
@@ -234,10 +237,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     scMgr.Update(evt.timeSinceLastFrame);
 
     //Avatar Controls
-    if(kShiftDown) {
-        avWalkSpeed = 4;
+    if(kShiftDown && !avWalkBack) {
+        avWalkSpeed = kRunSpeed;
     } else {
-        avWalkSpeed = 2;
+        avWalkSpeed = kWalkSpeed;
     }
 
     Vector3 avWalkDir;
@@ -266,7 +269,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         if(avWalk || avWalkBack || avWalkLeft || avWalkRight)
             mCamera->move(avWalkSpeed * direction * evt.timeSinceLastFrame);
     } else {
-        phAvatar->move(avWalkSpeed, direction, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
+        phAvatar->move(avWalkSpeed * evt.timeSinceLastFrame, direction, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
         Vector3 avCamPos = phAvatar->getPosition() + Vector3(0, 0.7f, 0);
         mCamera->setPosition(avCamPos);
     }
@@ -401,7 +404,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         float yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
         crPlayer *currPlayer = new crPlayer(phAvatar, ntClientID, phAvatar->getPosition(), yaw);
         currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
-        if(kShiftDown)
+        if(kShiftDown && !avWalkBack)
             currPlayer->setRunning();
         currPlayer->convertRotToFlag(rotate);
         uint32_t comp = 0;
@@ -421,10 +424,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             crPlayer *netPlayer = players[i];
             phAvatarController *netAvCtrl = netPlayer->getController();
             if(netPlayer->getWalking() != crPlayer::kNoWalk) {
-                float speed = 2;
+                float speed = kWalkSpeed;
                 if((netPlayer->getWalking() & crPlayer::kRun) != 0)
-                    speed = 4;
-                netAvCtrl->move(speed, netPlayer->getWalkDir());
+                    speed = kRunSpeed;
+                netAvCtrl->move(speed * evt.timeSinceLastFrame, netPlayer->getWalkDir());
             }
             if(netPlayer->getTurning() != 0)
                 netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);
