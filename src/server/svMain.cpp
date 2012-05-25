@@ -78,8 +78,8 @@ int main(void) {
             std::cout << "\n\nNew Packet from:"
                 << packet->guid.g << std::endl;*/
 
-            uint32_t client_id = 0, walking = 0;
-            float x = 0, y = 0, z = 0, yaw = 0, turning = 0;
+            uint32_t client_id = 0, walking = 0, turning = 0;
+            float x = 0, y = 0, z = 0, yaw = 0;
             RakString client_name;
             client_name.Clear();
 

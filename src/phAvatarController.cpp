@@ -25,6 +25,7 @@ phAvatarController::phAvatarController(btRigidBody *body)
 }
 
 phAvatarController::~phAvatarController() {
+    phBullet::getInstance().getWorld()->removeRigidBody(fBody);
     delete fBody;
 }
 

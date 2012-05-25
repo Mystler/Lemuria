@@ -84,8 +84,6 @@ private:
     void windowResized(RenderWindow *rw);
     void windowClosed(RenderWindow *rw);
     bool frameRenderingQueued(const FrameEvent &evt);
-    bool frameStarted(const FrameEvent &evt);
-    bool frameEnded(const FrameEvent &evt);
     bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     bool mouseMoved(const OIS::MouseEvent &arg);

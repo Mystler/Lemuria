@@ -46,7 +46,7 @@ crClient::~crClient() {
     }
 
     //unload Sounds
-    mSoundManager->destroyAllSounds();
+    //mSoundManager->destroyAllSounds();
 
     //unload OgreMax
     scMgr.Destroy();
@@ -178,7 +178,7 @@ void crClient::Scene01() {
     //init Camera and Viewport
     mCamera = mSceneMgr->createCamera("PlayerCam");
     mCamera->setPosition(Vector3(0, 1.8f, 0));
-    mCamera->lookAt(Vector3::UNIT_Z * 30);
+    mCamera->lookAt(Vector3::UNIT_X * 30);
     mCamera->setNearClipDistance(0.01f);
 
     Viewport *vp = mWindow->addViewport(mCamera);
@@ -362,8 +362,8 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     entPlayer = mSceneMgr->createEntity(playerEnt, "penguin.mesh");
                     ndPlayer = mSceneMgr->getRootSceneNode()->createChildSceneNode(playerNode);
                     ndPlayer->attachObject(entPlayer);
-                    ndPlayer->scale(Vector3(0.03f, 0.03f, 0.03f));
-                    ndPlayer->translate(Vector3(0, -0.1f, 0));
+                    ndPlayer->scale(Vector3(0.035f, 0.035f, 0.035f));
+                    ndPlayer->setDirection(Vector3::UNIT_X);
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
                     player = new crPlayer(playerCtrl, ntNetClientID, pos, Math::PI);
                     player->setToSavedPosition();
@@ -379,13 +379,14 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     playerEnt.append(playerNr.str());
+                    delete players[searchForPlayer(ntNetClientID)]->getController();
+                    players.erase(players.begin() + searchForPlayer(ntNetClientID));
                     if(mSceneMgr->hasSceneNode(playerNode)) {
                         mSceneMgr->destroyEntity(playerEnt);
                         mSceneMgr->destroySceneNode(playerNode);
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
-                    players.erase(players.begin() + searchForPlayer(ntNetClientID));
                     break;
                 default:
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got msg with ID " + ntPacket->data[0]);
@@ -463,20 +464,12 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             ntPeer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
         }
         */
+
+        //Do the magic physics simulation
+        phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
+        phBullet::getInstance().getDbgDrawer()->step();
     }
 
-    return true;
-}
-
-bool crClient::frameStarted(const FrameEvent &evt) {
-    phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
-    phBullet::getInstance().getDbgDrawer()->step();
-    return true;
-}
-
-bool crClient::frameEnded(const FrameEvent &evt) {
-    phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
-    phBullet::getInstance().getDbgDrawer()->step();
     return true;
 }
 

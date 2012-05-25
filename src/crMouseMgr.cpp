@@ -73,7 +73,7 @@ bool crClient::mouseMoved(const OIS::MouseEvent &arg) {
     //Camera Control
     if(avMouseLook) {
         mCamera->yaw(Degree(-arg.state.X.rel * avRotateSpeed));
-        rotate = -arg.state.X.rel * avRotateSpeed;
+        rotate = arg.state.X.rel * avRotateSpeed;
 
         Vector3 camDirection = mCamera->getDirection();
         if(camDirection.y > 0.9f) {

@@ -92,7 +92,7 @@ void crPlayer::convertRotToFlag(float rotSpeed) {
 
 Vector3 crPlayer::getWalkDir() {
     Quaternion rot = BtOgre::Convert::toOgre(fAvCtrl->getTransform().getRotation());
-    Vector3 frontDir = rot.zAxis();
+    Vector3 frontDir = rot.xAxis();
     Vector3 leftDir = Vector3(frontDir.z, 0, -frontDir.x);
     frontDir.normalise();
     leftDir.normalise();

@@ -90,7 +90,8 @@ btRigidBody *phBullet::createPhysicalAvatar(SceneNode *avatarNode) {
     avatarBody->setAngularFactor(0);
     btWorld->addRigidBody(avatarBody);
     btShapes.push_back(avatarShape);
-    btBodies.push_back(avatarBody);
+    //Body will be managed and destroyed by phAvatarController
+    //btBodies.push_back(avatarBody);
 
     return avatarBody;
 }
