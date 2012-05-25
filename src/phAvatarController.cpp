@@ -61,7 +61,7 @@ btTransform phAvatarController::getTransform() {
     return xform;
 }
 
-void phAvatarController::setTransform(btTransform xform) {
+void phAvatarController::setTransform(btTransform &xform) {
     fBody->getMotionState()->setWorldTransform(xform);
     fBody->setCenterOfMassTransform(xform);
 }

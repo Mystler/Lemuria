@@ -35,7 +35,7 @@ public:
     bool avatarOnGround();
 
     btTransform getTransform();
-    void setTransform(btTransform xform);
+    void setTransform(btTransform &xform);
     Vector3 getPosition();
     void setPosition(Vector3 pos);
     void setYaw(float yaw);

@@ -62,8 +62,8 @@ Vector3 ntMessage::readVector() {
 }
 
 crPlayer *ntMessage::readPlayer() {
-    uint32_t walking;
-    float turning, x, y, z;
+    uint32_t walking, turning;
+    float x, y, z;
     float yaw;
     crPlayer *player;
 
