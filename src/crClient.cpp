@@ -318,7 +318,6 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                 case PLAYER_UPDATE:
                     ntNetClientID = msg->getClientID();
                     player = msg->readPlayer();
-                    player->setSceneMgr(mSceneMgr);
                     playerNode = "ndPlayer";
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
@@ -363,8 +362,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer->scale(Vector3(0.03f, 0.03f, 0.03f));
                     ndPlayer->translate(Vector3(0, -0.1f, 0));
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
-                    player = new crPlayer(mSceneMgr, ntNetClientID, pos, Math::PI);
-                    player->setController(playerCtrl);
+                    player = new crPlayer(playerCtrl, ntNetClientID, pos, Math::PI);
                     player->setToSavedPosition();
 
                     players.push_back(player);
@@ -401,12 +399,11 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         //check my Player for changes
         ntCurDir = mCamera->getRealDirection();
         float yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
-        crPlayer *currPlayer = new crPlayer(mSceneMgr, ntClientID, phAvatar->getPosition(), yaw);
-        currPlayer->setController(phAvatar);
+        crPlayer *currPlayer = new crPlayer(phAvatar, ntClientID, phAvatar->getPosition(), yaw);
         currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
         if(kShiftDown)
             currPlayer->setRunning();
-        currPlayer->setTurning(int(rotate + 0.5));
+        currPlayer->convertRotToFlag(rotate);
         uint32_t comp = 0;
         if(myPlayer)
             comp = currPlayer->compare(myPlayer);

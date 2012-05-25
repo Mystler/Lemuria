@@ -52,22 +52,21 @@ public:
     };
 
     //ctors
-    crPlayer(SceneManager *sceneMgr);
-    crPlayer(SceneManager *sceneMgr, int clientID, Vector3 vector, float yaw);
-    crPlayer(SceneManager *sceneMgr, int clientID, int walking, int turning, Vector3 vector, float yaw);
+    crPlayer(phAvatarController *ctrl);
+    crPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw);
+    crPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw);
 
     uint32_t getClientID() { return fClientID; }
     uint32_t getWalking() { return fWalking; }
-    void setTurning(int turning) { fTurning = turning; }
+    void setTurning(uint32_t turning) { fTurning = turning; }
     uint32_t getTurning() { return fTurning; }
     float getYaw() { return fYaw; }
     Vector3 getPosition() { return fPosition; }
-    phAvatarController *getController() { return avCtrl; }
-    void setController(phAvatarController *ctrl) { avCtrl = ctrl; }
+    phAvatarController *getController() { return fAvCtrl; }
+    void setController(phAvatarController *ctrl) { fAvCtrl = ctrl; }
     void setRunning() { fWalking |= kRun; }
 
     //functions
-    void setSceneMgr(SceneManager *sceneMgr);
     void setToSavedPosition();
     void setToPosition(Vector3 position);
     void setToPosition(float x, float y, float z);
@@ -76,6 +75,7 @@ public:
     Vector3 getWalkDir();
     uint32_t compare(crPlayer *player);
 private:
+    phAvatarController *fAvCtrl;
     uint32_t fClientID, fWalking, fTurning;
     float fYaw;
     Vector3 fPosition;
@@ -83,6 +83,5 @@ private:
     String playerNode;
     stringstream playerNr;
     SceneManager *fSceneMgr;
-    phAvatarController *avCtrl;
 };
 #endif
