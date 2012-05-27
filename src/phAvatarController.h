@@ -1,7 +1,7 @@
 /*==LICENSE==
 
 This file is part of Lemuria.
-Copyright (C) 2012 Florian Mei√üner
+Copyright (C) 2012 Florian Meiﬂner
 
 Lemuria is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,17 +18,28 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
-#ifndef _scObjectMgr_h
-#define _scObjectMgr_h
+#ifndef _phAvatarController_h
+#define _phAvatarController_h
 
-#include <OgreSceneManager.h>
+#include "phBullet.h"
 
 using namespace Ogre;
 
-//For more information, see the cpp file.
-
-class scObjectMgr {
+class phAvatarController {
 public:
-    void processScene(SceneManager *sceneMgr);
+    phAvatarController(btRigidBody *body);
+    ~phAvatarController();
+    void move(float walkSpeed, Vector3 direction);
+    void move(float walkSpeed, Vector3 direction, float yaw);
+    void jump();
+    bool avatarOnGround();
+
+    btTransform getTransform();
+    void setTransform(btTransform &xform);
+    Vector3 getPosition();
+    void setPosition(Vector3 pos);
+    void setYaw(float yaw);
+private:
+    btRigidBody *fBody;
 };
 #endif

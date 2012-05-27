@@ -29,23 +29,24 @@ using namespace Ogre;
 
 class phBullet {
 public:
-    std::deque<btRigidBody *> btBodies;
-    std::deque<btCollisionShape *> btShapes;
     static phBullet &getInstance();
-    btDynamicsWorld *getWorld() {return btWorld;}
-    BtOgre::DebugDrawer *getDbgDrawer() {return btDbgDrawer;}
+    btDynamicsWorld *getWorld() { return btWorld; }
+    BtOgre::DebugDrawer *getDbgDrawer() { return btDbgDrawer; }
     void initDebugDrawer(SceneManager *sceneMgr);
-    void destroyPhysicals(void);
+    void destroyPhysicals();
     btRigidBody *createPhysicalAvatar(SceneNode *avatarNode);
-    bool avatarOnGround(btRigidBody *avatar);
+    void addBody(btRigidBody *body) { btBodies.push_back(body); }
+    void addShape(btCollisionShape *shape) { btShapes.push_back(shape); }
 private:
-    phBullet(void);
-    virtual ~phBullet(void);
+    phBullet();
+    ~phBullet();
     btAxisSweep3 *btBroadphase;
     btDefaultCollisionConfiguration *btCollisionConfig;
     btCollisionDispatcher *btDispatcher;
     btSequentialImpulseConstraintSolver *btSolver;
     btDynamicsWorld *btWorld;
     BtOgre::DebugDrawer *btDbgDrawer;
+    std::deque<btRigidBody*> btBodies;
+    std::deque<btCollisionShape*> btShapes;
 };
 #endif
