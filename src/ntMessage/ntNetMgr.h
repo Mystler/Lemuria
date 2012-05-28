@@ -18,47 +18,27 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
-
-#ifndef _ntMessage_h
-#define _ntMessage_h
-
-#include <OgreVector3.h>
+#ifndef _ntNetMgr_h
+#define _ntNetMgr_h
 
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
 #include "RakNetTypes.h"
 #include "BitStream.h"
 
-#include "crPlayer.h"
-
-using namespace Ogre;
 using namespace RakNet;
 
-class ntMessage {
+class ntNetMgr {
 public:
-    BitStream streamOut;
-
-    //ctor
-    ntMessage(uint32_t clientID);
-    ntMessage(Packet *packet);
-    //dtor
-    ~ntMessage();
-
-    uint32_t getClientID() { return fClientID; }
-    uint32_t getFlag() { return ntFlag; }
-    void setFlag(uint32_t flag);
-
-    //read
-    Vector3 readVector();
-    crPlayer *readPlayer();
-
-    //write
-    void writePlayerName(RakString name);
-    void writePlayer(crPlayer *player);
+    ntNetMgr(const char *host, unsigned short port);
+    ~ntNetMgr();
+    void connect();
+    void analyseIncoming(); //TODO
 private:
-    BitStream streamIn;
-    uint32_t fClientID;
-    MessageID ntFlag;
+    RakPeerInterface *ntPeer;
     Packet *ntPacket;
+    SystemAddress ntServerAddress;
+    const char *ntHost;
+    unsigned short ntPort;
 };
 #endif

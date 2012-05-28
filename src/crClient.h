@@ -60,7 +60,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #define SERVER_PORT 27015
 
 #include "crPlayer.h"
-#include "ntMessage.h"
+#include "ntNetMgr.h"
 #include "phAvatarController.h"
 #include "phBullet.h"
 #include "scObjectMgr.h"

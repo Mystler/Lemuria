@@ -17,7 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
-
+/*
+    TODO: replace networking stuff with ntNetMgr
+*/
 #include "crClient.h"
 
 #define kWalkSpeed 100
