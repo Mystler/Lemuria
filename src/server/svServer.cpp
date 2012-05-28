@@ -19,14 +19,26 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 *==LICENSE==*/
 
 #include "svServer.h"
-#include "crPlayer.h"
+
+#include "MessageIdentifiers.h"
+#include "RakPeerInterface.h"
+#include "RakNetTypes.h"
+#include "BitStream.h"
 
 #define MAX_CLIENTS 4
 #define SERVER_PORT 27015
 
+enum GameMessages {
+    NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
+    SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
+    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
+    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
+    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
+};
+
 svServer::svServer() {
     peer = RakPeerInterface::GetInstance();
-    sockDesc = new SocketDescriptor(SERVER_PORT, 0);
+    SocketDescriptor *sockDesc = new SocketDescriptor(SERVER_PORT, 0);
     peer->Startup(MAX_CLIENTS, sockDesc, 1);
     printf("Starting the AkshahNet Lemuria server.\nWaiting for connections...\n");
     peer->SetMaximumIncomingConnections(MAX_CLIENTS);
@@ -36,12 +48,12 @@ svServer::~svServer() {
     RakPeerInterface::DestroyInstance(peer);
 }
 
-void svServer::receive() {
-}
-
 svServer &svServer::getInstance() {
     static svServer svInstance;
     return svInstance;
+}
+
+void svServer::receive() {
 }
 
 int main() {

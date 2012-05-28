@@ -21,14 +21,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _svServer_h
 #define _svServer_h
 
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "RakNetTypes.h"
-#include "BitStream.h"
-
-#include <string>
-#include <iostream>
-#include <vector>
+namespace RakNet {
+    class RakPeerInterface;
+    class Packet;
+};
 
 using namespace RakNet;
 
@@ -43,16 +39,8 @@ public:
     static svServer &getInstance();
     void receive();
 
-    enum GameMessages {
-    NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
-    SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
-    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
-    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
-    };
 private:
     RakPeerInterface *peer;
     Packet *packet;
-    SocketDescriptor *sockDesc;
 };
 #endif
