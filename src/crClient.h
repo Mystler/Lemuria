@@ -50,6 +50,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgreOggSound.h>
 
+#include <vector>
+
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
 #include "RakNetTypes.h"
@@ -57,6 +59,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 27015
 
+#include "crPlayer.h"
+#include "ntMessage.h"
+#include "phAvatarController.h"
 #include "phBullet.h"
 #include "scObjectMgr.h"
 #include "3rdparty/ogremax/OgreMaxScene.hpp"
@@ -73,36 +78,37 @@ public:
     String ntServerIP;
     RakString ntPlayerName;
 private:
-    crClient(void);
-    virtual ~crClient(void);
-    virtual void windowResized(RenderWindow *rw);
-    virtual void windowClosed(RenderWindow *rw);
-    virtual bool frameRenderingQueued(const FrameEvent &evt);
-    virtual bool frameStarted(const FrameEvent &evt);
-    virtual bool frameEnded(const FrameEvent &evt);
-    virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
-    virtual bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
-    virtual bool mouseMoved(const OIS::MouseEvent &arg);
-    virtual bool keyPressed(const OIS::KeyEvent &arg);
-    virtual bool keyReleased(const OIS::KeyEvent &arg);
+    crClient();
+    ~crClient();
+    void Scene01();
+    void windowResized(RenderWindow *rw);
+    void windowClosed(RenderWindow *rw);
+    bool frameRenderingQueued(const FrameEvent &evt);
+    bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseMoved(const OIS::MouseEvent &arg);
+    bool keyPressed(const OIS::KeyEvent &arg);
+    bool keyReleased(const OIS::KeyEvent &arg);
+    uint32_t searchForPlayer(uint32_t clientID);
+
+    //Rendering
     String mPluginsCfg;
     Root *mRoot;
     RenderWindow *mWindow;
     SceneManager *mSceneMgr;
-    OIS::InputManager *mInputManager;
-    OIS::Mouse *mMouse;
-    OIS::Keyboard *mKeyboard;
-    //Physics
-    btRigidBody *phAvatar;
     bool btWireframe;
     //GUI
     CEGUI::Renderer *mGUIRenderer;
     //Sound
     OgreOggSound::OgreOggSoundManager *mSoundManager;
     //OIS Input
+    OIS::InputManager *mInputManager;
+    OIS::Mouse *mMouse;
+    OIS::Keyboard *mKeyboard;
     bool kShiftDown;
     //AvatarMovement
-    Real avWalkSpeed, avRotateSpeed, avJumpTime;
+    phAvatarController *phAvatar;
+    float avWalkSpeed, avRotateSpeed;
     bool avMouseLook;
     bool avWalk, avWalkBack, avWalkLeft, avWalkRight;
     bool avJump, avFly;
@@ -111,15 +117,17 @@ private:
     Viewport *vp;
     OgreMax::OgreMaxScene scMgr;
     scObjectMgr scObjMgr;
-    virtual void Scene01(void);
     //Multiplayer
     RakPeerInterface *ntPeer;
     Packet *ntPacket;
     SystemAddress ntServerAddress;
     BitStream bsOut;
     bool ntConnected;
-    int ntClientID;
-    Real ntPosSendTime, ntRotSendTime;
+    uint32_t ntClientID;
+    float ntPosSendTime, ntRotSendTime;
     Vector3 ntCurPos, ntCurDir;
+    std::vector<crPlayer*> players;
+    crPlayer* myPlayer;
+    float rotate;
 };
 #endif

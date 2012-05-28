@@ -20,7 +20,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "phBullet.h"
 
-phBullet::phBullet(void) {
+phBullet::phBullet() {
     //init Physics World
     btBroadphase = new btAxisSweep3(btVector3(-10000, -10000, -10000),
                                     btVector3(10000, 10000, 10000), 1024);
@@ -28,10 +28,10 @@ phBullet::phBullet(void) {
     btDispatcher = new btCollisionDispatcher(btCollisionConfig);
     btSolver = new btSequentialImpulseConstraintSolver();
     btWorld = new btDiscreteDynamicsWorld(btDispatcher, btBroadphase, btSolver, btCollisionConfig);
-    btWorld->setGravity(btVector3(0, -46.9f, 0));
+    btWorld->setGravity(btVector3(0, -40.0f, 0));
 }
 
-phBullet::~phBullet(void) {
+phBullet::~phBullet() {
     //clean up
     destroyPhysicals();
     delete btWorld;
@@ -52,7 +52,7 @@ void phBullet::initDebugDrawer(SceneManager *sceneMgr) {
     btWorld->setDebugDrawer(btDbgDrawer);
 }
 
-void phBullet::destroyPhysicals(void) {
+void phBullet::destroyPhysicals() {
     std::deque<btRigidBody *>::iterator itBody = btBodies.begin();
     while(btBodies.end() != itBody) {
         delete *itBody;
@@ -90,20 +90,8 @@ btRigidBody *phBullet::createPhysicalAvatar(SceneNode *avatarNode) {
     avatarBody->setAngularFactor(0);
     btWorld->addRigidBody(avatarBody);
     btShapes.push_back(avatarShape);
-    btBodies.push_back(avatarBody);
+    //Body will be managed and destroyed by phAvatarController
+    //btBodies.push_back(avatarBody);
 
     return avatarBody;
-}
-
-bool phBullet::avatarOnGround(btRigidBody *avatar) {
-    btTransform xform;
-    avatar->getMotionState()->getWorldTransform(xform);
-    btVector3 avPos = xform.getOrigin();
-    btVector3 avToGround = avPos + btVector3(0, -1.1f, 0);
-    btDynamicsWorld::ClosestRayResultCallback groundRay(avPos, avToGround);
-    btWorld->rayTest(avPos, avToGround, groundRay);
-    if(groundRay.hasHit()) {
-        return true;
-    }
-    return false;
 }
