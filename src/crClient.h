@@ -59,7 +59,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 27015
 
-#include "crPlayer.h"
+#include "ntPlayer.h"
 #include "ntNetMgr.h"
 #include "phAvatarController.h"
 #include "phBullet.h"
@@ -126,8 +126,8 @@ private:
     uint32_t ntClientID;
     float ntPosSendTime, ntRotSendTime;
     Vector3 ntCurPos, ntCurDir;
-    std::vector<crPlayer*> players;
-    crPlayer* myPlayer;
+    std::vector<ntPlayer*> players;
+    ntPlayer* myPlayer;
     float rotate;
 };
 #endif

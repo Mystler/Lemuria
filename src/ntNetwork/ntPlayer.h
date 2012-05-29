@@ -18,8 +18,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
-#ifndef _crPlayer_h
-#define _crPlayer_h
+#ifndef _ntPlayer_h
+#define _ntPlayer_h
 
 #include <OgreVector3.h>
 #include <OgreString.h>

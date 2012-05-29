@@ -1,13 +1,12 @@
 add_subdirectory(server)
-add_subdirectory(crPlayer)
-add_subdirectory(ntMessage)
-include_directories("crPlayer")
-include_directories("ntMessage")
+add_subdirectory(ntNetwork)
+include_directories("ntNetwork")
 
 set(CLIENT_HEADERS
     crClient.h
     phBullet.h
     scObjectMgr.h
+    phAvatarController.h
 )
 
 set(CLIENT_SOURCES
@@ -16,6 +15,7 @@ set(CLIENT_SOURCES
     crMouseMgr.cpp
     phBullet.cpp
     scObjectMgr.cpp
+    phAvatarController.cpp
 )
 
 set(3rdparty
@@ -63,8 +63,7 @@ target_link_libraries(Lemuria
     ${OGREOGGSOUND_LIBRARY}
     ${BULLET_LIBRARIES}
     ${RAKNET_LIBRARY}
-    crPlayer
-    ntMessage
+    ntNetwork
 )
 
 if(UNIX)

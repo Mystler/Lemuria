@@ -294,7 +294,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             String playerEnt;
             String playerNode;
             stringstream playerNr;
-            crPlayer *player;
+            ntPlayer *player;
             phAvatarController *playerCtrl;
             ntMessage *out;
             Vector3 pos;
@@ -367,7 +367,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer->scale(Vector3(0.035f, 0.035f, 0.035f));
                     ndPlayer->setDirection(Vector3::UNIT_X);
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
-                    player = new crPlayer(playerCtrl, ntNetClientID, pos, Math::PI);
+                    player = new ntPlayer(playerCtrl, ntNetClientID, pos, Math::PI);
                     player->setToSavedPosition();
 
                     players.push_back(player);
@@ -405,7 +405,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         //check my Player for changes
         ntCurDir = mCamera->getRealDirection();
         float yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
-        crPlayer *currPlayer = new crPlayer(phAvatar, ntClientID, phAvatar->getPosition(), yaw);
+        ntPlayer *currPlayer = new ntPlayer(phAvatar, ntClientID, phAvatar->getPosition(), yaw);
         currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
         if(kShiftDown && !avWalkBack)
             currPlayer->setRunning();
@@ -413,7 +413,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         uint32_t comp = 0;
         if(myPlayer)
             comp = currPlayer->compare(myPlayer);
-        if(((comp & crPlayer::kWalk) != 0) || ((comp & crPlayer::kTurn) != 0)) {
+        if(((comp & ntPlayer::kWalk) != 0) || ((comp & ntPlayer::kTurn) != 0)) {
             //there are interesting changes, so send the player
             ntMessage *out = new ntMessage(ntClientID);
             out->setFlag(PLAYER_UPDATE);
@@ -424,9 +424,9 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
 
         //move other players
         for(size_t i = 0; i < players.size(); i++) {
-            crPlayer *netPlayer = players[i];
+            ntPlayer *netPlayer = players[i];
             phAvatarController *netAvCtrl = netPlayer->getController();
-            if(netPlayer->getWalking() != crPlayer::kNoWalk) {
+            if(netPlayer->getWalking() != ntPlayer::kNoWalk) {
                 float speed = kWalkSpeed;
                 if((netPlayer->getWalking() & crPlayer::kRun) != 0)
                     speed = kRunSpeed;
