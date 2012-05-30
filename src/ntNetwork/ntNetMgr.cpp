@@ -73,4 +73,5 @@ void ntNetMgr::sendPlayerMsg(ntPlayer *player) {
     ntMessage *out = new ntMessage(ntClientID, PLAYER_UPDATE);
     out->writePlayer(player);
     ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+    delete out;
 }

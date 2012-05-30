@@ -28,6 +28,8 @@ namespace Ogre {
     class OgreString;
 };
 
+class phAvatarController;
+
 using namespace Ogre;
 
 class ntPlayer {
@@ -75,6 +77,7 @@ public:
     void convertRotToFlag(float rotSpeed);
     Vector3 getWalkDir();
     uint32_t compare(ntPlayer *player);
+    void getPosition(float &x, float &y, float &z);
 private:
     phAvatarController *fAvCtrl;
     uint32_t fClientID, fWalking, fTurning;

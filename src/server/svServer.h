@@ -41,6 +41,5 @@ public:
 
 private:
     RakPeerInterface *peer;
-    Packet *packet;
 };
 #endif

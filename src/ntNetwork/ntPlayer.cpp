@@ -128,3 +128,9 @@ uint32_t ntPlayer::compare(ntPlayer *player) {
 
     return r;
 }
+
+void ntPlayer::getPosition(float &x, float &y, float &z) {
+    x = fPosition.x;
+    y = fPosition.y;
+    z = fPosition.z;
+}

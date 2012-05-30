@@ -1,6 +1,5 @@
-include_directories("../crPlayer")
-include_directories("../ntMessage")
 include_directories("..")
+include_directories("../ntNetwork")
 
 set(SERVER_HEADERS
     svServer.h
@@ -18,8 +17,7 @@ add_executable(AkshahNet
 target_link_libraries(AkshahNet
     ${RAKNET_LIBRARY}
     ${Boost_LIBRARIES}
-    crPlayer
-    ntMessage
+    ntNetwork
 )
 
 if(UNIX)
