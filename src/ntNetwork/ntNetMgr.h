@@ -21,10 +21,17 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ntNetMgr_h
 #define _ntNetMgr_h
 
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
+#include <stdint.h>
+
 #include "RakNetTypes.h"
-#include "BitStream.h"
+
+namespace RakNet {
+    class RakPeerInterface;
+    class RakString;
+};
+
+class ntMessage;
+class ntPlayer;
 
 using namespace RakNet;
 
@@ -32,13 +39,15 @@ class ntNetMgr {
 public:
     ntNetMgr(const char *host, unsigned short port);
     ~ntNetMgr();
-    void connect();
-    void analyseIncoming(); //TODO
+    RakPeerInterface *connect();
+    ntMessage *getMessage(Packet *packet);
+    void sendPlNameMsg(RakString name);
+    void sendPlayerMsg(ntPlayer *player);
 private:
     RakPeerInterface *ntPeer;
-    Packet *ntPacket;
     SystemAddress ntServerAddress;
     const char *ntHost;
     unsigned short ntPort;
+    uint32_t ntClientID;
 };
 #endif

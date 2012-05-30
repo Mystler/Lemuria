@@ -18,11 +18,14 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
-#include "crPlayer.h"
+#include "ntPlayer.h"
+
+#include <OgreVector3.h>
+#include <OgreString.h>
 
 //ctor-----------------------------------
 //default--------------------------------
-crPlayer::crPlayer(phAvatarController *ctrl)
+ntPlayer::ntPlayer(phAvatarController *ctrl)
 : fAvCtrl(ctrl),
   fClientID(0),
   fWalking(0),
@@ -33,7 +36,7 @@ crPlayer::crPlayer(phAvatarController *ctrl)
 
 //ctor---------------------------------
 //direction only-----------------------
-crPlayer::crPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw)
+ntPlayer::ntPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw)
 : fAvCtrl(ctrl),
   fClientID(clientID),
   fWalking(0),
@@ -44,7 +47,7 @@ crPlayer::crPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, 
 
 //ctor---------------------------------
 //complete-----------------------------
-crPlayer::crPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw)
+ntPlayer::ntPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw)
 : fAvCtrl(ctrl),
   fClientID(clientID),
   fWalking(walking),
@@ -53,24 +56,24 @@ crPlayer::crPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking
   fYaw(yaw) {
 }
 
-void crPlayer::setToSavedPosition() {
+void ntPlayer::setToSavedPosition() {
     if(fAvCtrl) {
         fAvCtrl->setPosition(fPosition);
         fAvCtrl->setYaw(fYaw);
     }
 }
 
-void crPlayer::setToPosition(Vector3 position) {
+void ntPlayer::setToPosition(Vector3 position) {
     if(fAvCtrl)
         fAvCtrl->setPosition(position);
 }
 
-void crPlayer::setToPosition(float x, float y, float z) {
+void ntPlayer::setToPosition(float x, float y, float z) {
     if(fAvCtrl)
         fAvCtrl->setPosition(Vector3(x, y, z));
 }
 
-void crPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight) {
+void ntPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight) {
     fWalking = kNoWalk;
     if(avWalk)
         fWalking |= kWalkForward;
@@ -82,7 +85,7 @@ void crPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, b
         fWalking |= kWalkRight;
 }
 
-void crPlayer::convertRotToFlag(float rotSpeed) {
+void ntPlayer::convertRotToFlag(float rotSpeed) {
     fTurning = kNoTurn;
     if(rotSpeed < 0)
         fTurning |= kTurnLeft;
@@ -90,7 +93,7 @@ void crPlayer::convertRotToFlag(float rotSpeed) {
         fTurning |= kTurnRight;
 }
 
-Vector3 crPlayer::getWalkDir() {
+Vector3 ntPlayer::getWalkDir() {
     Quaternion rot = BtOgre::Convert::toOgre(fAvCtrl->getTransform().getRotation());
     Vector3 frontDir = rot.xAxis();
     Vector3 leftDir = Vector3(frontDir.z, 0, -frontDir.x);
@@ -112,7 +115,7 @@ Vector3 crPlayer::getWalkDir() {
     return dir;
 }
 
-uint32_t crPlayer::compare(crPlayer *player) {
+uint32_t ntPlayer::compare(ntPlayer *player) {
     uint32_t r = 0;
     if (player->getWalking() != fWalking)
         r |= kWalk;

@@ -21,6 +21,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
     TODO: replace networking stuff with ntNetMgr
 */
 #include "crClient.h"
+#include "ntMessage.h"
 
 #define kWalkSpeed 100
 #define kRunSpeed 200
@@ -108,10 +109,8 @@ bool crClient::init(void) {
     //connect to server if multiplayer is active
     if(ntMultiplayer) {
         LogManager::getSingletonPtr()->logMessage("MULTI: Active");
-        ntPeer = RakPeerInterface::GetInstance();
-        SocketDescriptor *ntSockDesc = new SocketDescriptor();
-        ntPeer->Startup(1, ntSockDesc, 1);
-        ntPeer->Connect(ntServerIP.c_str(), SERVER_PORT, 0, 0);
+        netMgr = new ntNetMgr(ntServerIP.c_str(), SERVER_PORT);
+        ntPeer = netMgr->connect();
         LogManager::getSingletonPtr()->logMessage("MULTI: Connecting to server " + ntServerIP);
     }
 
@@ -287,7 +286,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             BitStream bsIn(ntPacket->data, ntPacket->length, false);
             bsIn.IgnoreBytes(sizeof(MessageID));
 
-            ntMessage *msg = new ntMessage(ntPacket);
+            ntMessage *inMsg = new ntMessage();
             uint32_t ntNetClientID;
             Entity *entPlayer;
             SceneNode *ndPlayer;
@@ -296,63 +295,45 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             stringstream playerNr;
             ntPlayer *player;
             phAvatarController *playerCtrl;
-            ntMessage *out;
+            ntMessage *outMsg;
             Vector3 pos;
 
-            switch(msg->getFlag()) {
+            inMsg = netMgr->getMessage(ntPacket);
+
+            switch(inMsg->getFlag()) {
                 case SPAWN_POSITION:
                     //get position and spawn
-                    ntClientID = msg->getClientID();
-                    pos = msg->readVector();
+                    ntClientID = inMsg->getClientID();
+                    pos = inMsg->readVector();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(ntClientID));
                     LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(pos.x) + ", " +
                             StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
                     phAvatar->setPosition(pos);
-                    ntServerAddress = ntPacket->systemAddress;
-                    //send playername to server
-                    out = new ntMessage(ntClientID);
-                    out->setFlag(PLAYERNAME);
-                    out->writePlayerName(ntPlayerName);
-
-                    ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+                    netMgr->sendPlNameMsg(ntPlayerName);
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
                     ntConnected = true;
                     LogManager::getSingletonPtr()->logMessage("MULTI: Server accepted connection");
                     break;
                 case PLAYER_UPDATE:
-                    ntNetClientID = msg->getClientID();
-                    player = msg->readPlayer();
+                    ntNetClientID = inMsg->getClientID();
+                    player = inMsg->readPlayer();
                     playerNode = "ndPlayer";
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     if(mSceneMgr->hasSceneNode(playerNode)) {
                         playerCtrl = players[searchForPlayer(ntNetClientID)]->getController();
-                        if(playerCtrl)
-                            player->setController(playerCtrl);
+                        if(playerCtrl) //<--------isn't !playerCtrl?
+                            player->setController(playerCtrl); //can be deleted when ntPlayer is sent
                         players[searchForPlayer(ntNetClientID)] = player;
                         player->setToSavedPosition();
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
                     break;
-                /*case DIRECTION_UPDATE:
-                    bsIn.Read(ntNetClientID);
-                    bsIn.Read(yaw);
-                    playerNode = "ndPlayer";
-                    playerNr << ntNetClientID;
-                    playerNode.append(playerNr.str());
-                    if(mSceneMgr->hasSceneNode(playerNode)) {
-                        ndPlayer = mSceneMgr->getSceneNode(playerNode);
-                        ndPlayer->setOrientation(Quaternion(Radian(yaw), Vector3::UNIT_Y));
-                    } else {
-                        LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
-                    }
-                    break;
-                */
                 case NEW_CLIENT:
-                    ntNetClientID = msg->getClientID();
-                    pos = msg->readVector();
+                    ntNetClientID = inMsg->getClientID();
+                    pos = inMsg->readVector();
                     LogManager::getSingletonPtr()->logMessage("MULTI: New Client " +
                             StringConverter::toString(ntNetClientID) + " - " + StringConverter::toString(pos.x) +
                             ", " + StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
@@ -415,10 +396,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             comp = currPlayer->compare(myPlayer);
         if(((comp & ntPlayer::kWalk) != 0) || ((comp & ntPlayer::kTurn) != 0)) {
             //there are interesting changes, so send the player
-            ntMessage *out = new ntMessage(ntClientID);
-            out->setFlag(PLAYER_UPDATE);
-            out->writePlayer(currPlayer);
-            ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+            netMgr->sendPlayerMsg(currPlayer);
         }
         myPlayer = currPlayer;
 
@@ -428,44 +406,13 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             phAvatarController *netAvCtrl = netPlayer->getController();
             if(netPlayer->getWalking() != ntPlayer::kNoWalk) {
                 float speed = kWalkSpeed;
-                if((netPlayer->getWalking() & crPlayer::kRun) != 0)
+                if((netPlayer->getWalking() & ntPlayer::kRun) != 0)
                     speed = kRunSpeed;
                 netAvCtrl->move(speed * evt.timeSinceLastFrame, netPlayer->getWalkDir());
             }
             if(netPlayer->getTurning() != 0)
                 netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);
         }
-
-        /*send position every 0.1sec
-        ntPosSendTime += evt.timeSinceLastFrame;
-        if(ntPosSendTime >= 0.1f) {
-            ntPosSendTime = 0;
-            ntCurPos = Vector3(avPos.x, avPos.y - 1.8f, avPos.z);
-            x = ntCurPos.x;
-            y = ntCurPos.y;
-            z = ntCurPos.z;
-            bsOut.Reset();
-            bsOut.Write((MessageID)POSITION_UPDATE);
-            bsOut.Write(ntClientID);
-            bsOut.Write(x);
-            bsOut.Write(y);
-            bsOut.Write(z);
-            ntPeer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
-        }
-
-        //send orientation every 0.1sec
-        ntRotSendTime += evt.timeSinceLastFrame;
-        if(ntRotSendTime >= 0.1f) {
-            ntRotSendTime = 0;
-            ntCurDir = mCamera->getRealDirection();
-            yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
-            bsOut.Reset();
-            bsOut.Write((MessageID)DIRECTION_UPDATE);
-            bsOut.Write(ntClientID);
-            bsOut.Write(yaw);
-            ntPeer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
-        }
-        */
 
         //Do the magic physics simulation
         phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);

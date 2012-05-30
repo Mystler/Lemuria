@@ -21,15 +21,16 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ntPlayer_h
 #define _ntPlayer_h
 
-#include <OgreVector3.h>
-#include <OgreString.h>
-#include <OgreSceneNode.h>
-#include <OgreSceneManager.h>
 #include "phAvatarController.h"
+
+namespace Ogre {
+    class OgreVector3;
+    class OgreString;
+};
 
 using namespace Ogre;
 
-class crPlayer {
+class ntPlayer {
 public:
     enum walkingFlags {
         kNoWalk = 0,
@@ -52,9 +53,9 @@ public:
     };
 
     //ctors
-    crPlayer(phAvatarController *ctrl);
-    crPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw);
-    crPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw);
+    ntPlayer(phAvatarController *ctrl);
+    ntPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw);
+    ntPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw);
 
     uint32_t getClientID() { return fClientID; }
     uint32_t getWalking() { return fWalking; }
@@ -73,15 +74,11 @@ public:
     void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
     void convertRotToFlag(float rotSpeed);
     Vector3 getWalkDir();
-    uint32_t compare(crPlayer *player);
+    uint32_t compare(ntPlayer *player);
 private:
     phAvatarController *fAvCtrl;
     uint32_t fClientID, fWalking, fTurning;
     float fYaw;
     Vector3 fPosition;
-    SceneNode* ndPlayer;
-    String playerNode;
-    stringstream playerNr;
-    SceneManager *fSceneMgr;
 };
 #endif

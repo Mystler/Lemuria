@@ -96,6 +96,7 @@ private:
     Root *mRoot;
     RenderWindow *mWindow;
     SceneManager *mSceneMgr;
+    ntNetMgr *netMgr;
     bool btWireframe;
     //GUI
     CEGUI::Renderer *mGUIRenderer;
