@@ -49,7 +49,7 @@ public:
     bool offline;
     float x, y, z;
     ntPlayer *player;
-    
+
     Client(uint32_t passed_id, RakNetGUID passed_guid, bool passed_offline, float posX, float posY, float posZ)
     : id(passed_id),
       guid(passed_guid),
@@ -109,7 +109,7 @@ void svServer::receive() {
                             }
                         }
                         delete out;
-                        
+
                         printf("Sending other clients position to new client\n");
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {

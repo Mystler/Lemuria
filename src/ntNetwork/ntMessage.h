@@ -22,14 +22,18 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ntMessage_h
 #define _ntMessage_h
 
-#include <OgreVector3.h>
-
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "RakNetTypes.h"
 #include "BitStream.h"
 
 #include "ntPlayer.h"
+
+namespace Ogre {
+    class Vector3;
+};
+
+namespace RakNet {
+    class RakString;
+    struct Packet;
+};
 
 using namespace Ogre;
 using namespace RakNet;

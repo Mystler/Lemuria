@@ -20,6 +20,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ntMessage.h"
 
+#include "MessageIdentifiers.h"
+#include "RakNetTypes.h"
+#include <OgreVector3.h>
+
 //ctor---------------------
 //out----------------------
 ntMessage::ntMessage()

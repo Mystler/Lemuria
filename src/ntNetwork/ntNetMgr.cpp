@@ -22,6 +22,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
+#include "RakString.h"
 #include "BitStream.h"
 
 #include "ntMessage.h"

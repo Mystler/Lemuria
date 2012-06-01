@@ -20,8 +20,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ntPlayer.h"
 
-#include <OgreVector3.h>
-#include <OgreString.h>
+#include "phAvatarController.h"
 
 //ctor-----------------------------------
 //default--------------------------------

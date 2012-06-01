@@ -23,7 +23,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 namespace RakNet {
     class RakPeerInterface;
-    class Packet;
 };
 
 using namespace RakNet;

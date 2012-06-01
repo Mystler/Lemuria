@@ -21,12 +21,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ntPlayer_h
 #define _ntPlayer_h
 
-#include "phAvatarController.h"
+#include <stdint.h>
 
-namespace Ogre {
-    class OgreVector3;
-    class OgreString;
-};
+#include <OgreVector3.h>
 
 class phAvatarController;
 
