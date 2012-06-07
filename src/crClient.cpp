@@ -295,7 +295,6 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             stringstream playerNr;
             ntPlayer *player;
             phAvatarController *playerCtrl;
-            ntMessage *outMsg;
             Vector3 pos;
 
             inMsg = ntMgr->getMessage(ntPacket);

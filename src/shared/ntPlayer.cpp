@@ -21,7 +21,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "ntPlayer.h"
 
 #include <OgreQuaternion.h>
-#include <bullet/LinearMath/btTransform.h>
+#include <LinearMath/btTransform.h>
 #include "../phAvatarController.h"
 
 //ctor-----------------------------------
@@ -101,13 +101,13 @@ Vector3 ntPlayer::getWalkDir() {
     leftDir.normalise();
 
     Vector3 dir = Vector3(0, 0, 0);
-    if((fWalking & kWalkForward) != 0)
+    if(fWalking & kWalkForward)
         dir += frontDir;
-    if((fWalking & kWalkBack) != 0)
+    if(fWalking & kWalkBack)
         dir -= frontDir;
-    if((fWalking & kWalkLeft) != 0)
+    if(fWalking & kWalkLeft)
         dir += leftDir;
-    if((fWalking & kWalkRight) != 0)
+    if(fWalking & kWalkRight)
         dir -= leftDir;
     if(dir != Vector3(0, 0, 0))
         dir.normalise();
