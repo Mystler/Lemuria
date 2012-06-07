@@ -22,13 +22,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ntMessage_h
 #define _ntMessage_h
 
-#include "BitStream.h"
+#include <BitStream.h>
 
 #include "ntPlayer.h"
-
-namespace Ogre {
-    class Vector3;
-};
 
 namespace RakNet {
     class RakString;
@@ -40,8 +36,6 @@ using namespace RakNet;
 
 class ntMessage {
 public:
-    BitStream streamOut;
-
     //ctor
     ntMessage();
     ntMessage(uint32_t clientID, uint32_t flag);
@@ -49,8 +43,9 @@ public:
     //dtor
     ~ntMessage();
 
+    BitStream *getStream() { return &fStreamOut; }
     uint32_t getClientID() { return fClientID; }
-    uint32_t getFlag() { return ntFlag; }
+    uint32_t getFlag() { return fFlag; }
     void setFlag(uint32_t flag);
 
     //read
@@ -64,9 +59,9 @@ public:
     void writeString(RakString string);
     void writePlayer(ntPlayer *player);
 private:
-    BitStream streamIn;
+    BitStream fStreamIn, fStreamOut;
     uint32_t fClientID;
-    MessageID ntFlag;
-    Packet *ntPacket;
+    MessageID fFlag;
+    Packet *fPacket;
 };
 #endif

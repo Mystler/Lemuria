@@ -21,13 +21,13 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "svServer.h"
 
 #include <vector>
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "RakNetTypes.h"
-#include "BitStream.h"
+#include <MessageIdentifiers.h>
+#include <RakPeerInterface.h>
+#include <RakNetTypes.h>
+#include <BitStream.h>
 
-#include "ntMessage.h"
-#include "ntPlayer.h"
+#include "../shared/ntMessage.h"
+#include "../shared/ntPlayer.h"
 
 #define MAX_CLIENTS 4
 #define SERVER_PORT 27015
@@ -104,7 +104,7 @@ void svServer::receive() {
                         out->writeVector(0.0f, 1.8f, 0.0f);
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
-                                peer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                                peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                                             peer->GetSystemAddressFromGuid(clients[i].guid), false);
                             }
                         }
@@ -115,7 +115,7 @@ void svServer::receive() {
                             if(!clients[i].offline) {
                                 ntMessage *out = new ntMessage(client_id, NEW_CLIENT);
                                 out->writeVector(clients[i].x, clients[i].y, clients[i].z);
-                                peer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+                                peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
                         delete out;
                         }
@@ -127,7 +127,7 @@ void svServer::receive() {
 
                     ntMessage *out = new ntMessage(client_id, SPAWN_POSITION);
                     out->writeVector(0.0f, 1.8f, 0.0f);
-                    peer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+                    peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                     delete out;
                     break;
                 }
@@ -143,7 +143,7 @@ void svServer::receive() {
                             ntMessage *out = new ntMessage(client_id, DISCONNECT_PLAYER);
                             for(size_t j = 0; j < clients.size(); ++j) {
                                 if(!clients[j].offline) {
-                                    peer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                                    peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                                                peer->GetSystemAddressFromGuid(clients[j].guid), false);
                                 }
                             }
@@ -161,7 +161,7 @@ void svServer::receive() {
                     for(size_t i = 0; i < clients.size(); i++) {
                         if(client_id != i && !clients[i].offline) {
                             //std::cout << "  To: " << i << " - " << clients[i].guid.g << std::endl;
-                            peer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                            peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                                        peer->GetSystemAddressFromGuid(clients[i].guid), false);
                         }
                     }

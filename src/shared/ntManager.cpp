@@ -18,17 +18,12 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
-#include "ntNetMgr.h"
+#include "ntManager.h"
 
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "RakString.h"
-#include "BitStream.h"
+#include <MessageIdentifiers.h>
 
 #include "ntMessage.h"
 #include "ntPlayer.h"
-
-using namespace Ogre;
 
 enum GameMessages {
     NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
@@ -38,41 +33,36 @@ enum GameMessages {
     DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
 };
 
-ntNetMgr::ntNetMgr(const char *host, unsigned short port)
-: ntHost(host),
-  ntPort(port) {
+ntManager::~ntManager() {
+    RakPeerInterface::DestroyInstance(fPeer);
 }
 
-ntNetMgr::~ntNetMgr() {
-    RakPeerInterface::DestroyInstance(ntPeer);
-}
-
-RakPeerInterface *ntNetMgr::connect() {
-    ntPeer = RakPeerInterface::GetInstance();
+RakPeerInterface *ntManager::connect(const char *host, unsigned short port) {
+    fPeer = RakPeerInterface::GetInstance();
     SocketDescriptor *ntSockDesc = new SocketDescriptor();
-    ntPeer->Startup(1, ntSockDesc, 1);
-    ntPeer->Connect(ntHost, ntPort,0,0);
-    return ntPeer;
+    fPeer->Startup(1, ntSockDesc, 1);
+    fPeer->Connect(host, port,0,0);
+    return fPeer;
 }
 
-ntMessage *ntNetMgr::getMessage(Packet *packet) {
+ntMessage *ntManager::getMessage(Packet *packet) {
     ntMessage *r = new ntMessage(packet);
-    ntClientID = r->getClientID();
-    ntServerAddress = packet->systemAddress;
+    fClientID = r->getClientID();
+    fServerAddress = packet->systemAddress;
 
     return r;
 }
 
-void ntNetMgr::sendPlNameMsg(RakString name) {
-	ntMessage *out = new ntMessage(ntClientID, PLAYERNAME);
+void ntManager::sendPlNameMsg(RakString name) {
+    ntMessage *out = new ntMessage(fClientID, PLAYERNAME);
     out->writeString(name);
-    ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+    fPeer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
     delete out;
 }
 
-void ntNetMgr::sendPlayerMsg(ntPlayer *player) {
-    ntMessage *out = new ntMessage(ntClientID, PLAYER_UPDATE);
+void ntManager::sendPlayerMsg(ntPlayer *player) {
+    ntMessage *out = new ntMessage(fClientID, PLAYER_UPDATE);
     out->writePlayer(player);
-    ntPeer->Send(&out->streamOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, ntServerAddress, false);
+    fPeer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
     delete out;
 }

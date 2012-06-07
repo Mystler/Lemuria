@@ -1,6 +1,3 @@
-include_directories("..")
-include_directories("../ntNetwork")
-
 set(SERVER_HEADERS
     svServer.h
 )
@@ -17,7 +14,7 @@ add_executable(AkshahNet
 target_link_libraries(AkshahNet
     ${RAKNET_LIBRARY}
     ${Boost_LIBRARIES}
-    ntNetwork
+    shared
 )
 
 if(UNIX)

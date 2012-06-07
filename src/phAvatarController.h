@@ -21,9 +21,12 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _phAvatarController_h
 #define _phAvatarController_h
 
-#include "phBullet.h"
+#include <OgreVector3.h>
 
 using namespace Ogre;
+
+class btRigidBody;
+class btTransform;
 
 class phAvatarController {
 public:
@@ -34,11 +37,12 @@ public:
     void jump();
     bool avatarOnGround();
 
-    btTransform getTransform();
-    void setTransform(btTransform &xform);
-    Vector3 getPosition();
-    void setPosition(Vector3 pos);
-    void setYaw(float yaw);
+    virtual btTransform getTransform();
+    virtual void setTransform(btTransform &xform);
+    virtual Vector3 getPosition();
+    virtual void setPosition(Vector3 pos);
+    virtual void setYaw(float yaw);
+    virtual Vector3 getDirection();
 private:
     btRigidBody *fBody;
 };

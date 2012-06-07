@@ -20,6 +20,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "phBullet.h"
 
+#include "3rdparty/btogre/BtOgreGP.h"
+#include "3rdparty/btogre/BtOgrePG.h"
+
 phBullet::phBullet() {
     //init Physics World
     btBroadphase = new btAxisSweep3(btVector3(-10000, -10000, -10000),

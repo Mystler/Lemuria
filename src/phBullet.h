@@ -22,8 +22,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #define _phBullet_h
 
 #include "3rdparty/btogre/BtOgreExtras.h"
-#include "3rdparty/btogre/BtOgreGP.h"
-#include "3rdparty/btogre/BtOgrePG.h"
 
 using namespace Ogre;
 

@@ -20,47 +20,47 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ntMessage.h"
 
-#include "MessageIdentifiers.h"
-#include "RakNetTypes.h"
+#include <MessageIdentifiers.h>
+#include <RakNetTypes.h>
 #include <OgreVector3.h>
 
 //ctor---------------------
 //out----------------------
 ntMessage::ntMessage()
 : fClientID(0),
-  ntFlag(0) {
+  fFlag(0) {
 }
 
 ntMessage::ntMessage(uint32_t clientID, uint32_t flag)
 : fClientID(clientID) {
-  ntFlag = (MessageID)flag;
-  streamOut.Write(ntFlag);
-  streamOut.Write(fClientID);
+  fFlag = (MessageID)flag;
+  fStreamOut.Write(fFlag);
+  fStreamOut.Write(fClientID);
 }
 
 //ctor--------------------
 //in----------------------
 ntMessage::ntMessage(Packet *packet)
-: ntPacket(packet) {
-    ntFlag = ntPacket->data[0];
-    streamIn = BitStream(ntPacket->data, ntPacket->length, false);
-    streamIn.IgnoreBytes(sizeof(MessageID));
+: fPacket(packet) {
+    fFlag = fPacket->data[0];
+    fStreamIn = BitStream(fPacket->data, fPacket->length, false);
+    fStreamIn.IgnoreBytes(sizeof(MessageID));
 
-    streamIn.Read(fClientID);
+    fStreamIn.Read(fClientID);
 }
 
 //dtor-------------------
 ntMessage::~ntMessage() {
-    streamIn.Reset();
-    streamOut.Reset();
+    fStreamIn.Reset();
+    fStreamOut.Reset();
 }
 
 //read
 Vector3 ntMessage::readVector() {
     float x, y, z;
-    streamIn.Read(x);
-    streamIn.Read(y);
-    streamIn.Read(z);
+    fStreamIn.Read(x);
+    fStreamIn.Read(y);
+    fStreamIn.Read(z);
     Vector3 r = Vector3(x,y,z);
 
     return r;
@@ -68,35 +68,35 @@ Vector3 ntMessage::readVector() {
 
 RakString ntMessage::readString() {
     RakString r;
-    streamIn.Read(r);
+    fStreamIn.Read(r);
 
     return r;
 }
 
 ntPlayer *ntMessage::readPlayer() {
     ntPlayer *r;
-    streamIn.Read(r);
+    fStreamIn.Read(r);
 
     return r;
 }
 
 //write
 void ntMessage::writeVector(Vector3 vector) {
-    streamOut.Write(vector.x);
-    streamOut.Write(vector.y);
-    streamOut.Write(vector.z);
+    fStreamOut.Write(vector.x);
+    fStreamOut.Write(vector.y);
+    fStreamOut.Write(vector.z);
 }
 
 void ntMessage::writeVector(float x, float y, float z) {
-    streamOut.Write(x);
-    streamOut.Write(y);
-    streamOut.Write(z);
+    fStreamOut.Write(x);
+    fStreamOut.Write(y);
+    fStreamOut.Write(z);
 }
 
 void ntMessage::writeString(RakString string) {
-    streamOut.Write(string);
+    fStreamOut.Write(string);
 }
 
 void ntMessage::writePlayer(ntPlayer *player) {
-    streamOut.Write(player);
+    fStreamOut.Write(player);
 }

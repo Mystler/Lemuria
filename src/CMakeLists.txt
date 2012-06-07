@@ -1,21 +1,20 @@
 add_subdirectory(server)
-add_subdirectory(ntNetwork)
-include_directories("ntNetwork")
+add_subdirectory(shared)
 
 set(CLIENT_HEADERS
     crClient.h
+    phAvatarController.h
     phBullet.h
     scObjectMgr.h
-    phAvatarController.h
 )
 
 set(CLIENT_SOURCES
     crClient.cpp
     crKeyMgr.cpp
     crMouseMgr.cpp
+    phAvatarController.cpp
     phBullet.cpp
     scObjectMgr.cpp
-    phAvatarController.cpp
 )
 
 set(3rdparty
@@ -63,7 +62,7 @@ target_link_libraries(Lemuria
     ${OGREOGGSOUND_LIBRARY}
     ${BULLET_LIBRARIES}
     ${RAKNET_LIBRARY}
-    ntNetwork
+    shared
 )
 
 if(UNIX)

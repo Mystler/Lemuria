@@ -22,6 +22,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "crClient.h"
 #include "phBullet.h"
 
+#include "3rdparty/btogre/BtOgreGP.h"
 #include <OgreEntity.h>
 
 /*

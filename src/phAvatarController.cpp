@@ -19,6 +19,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 *==LICENSE==*/
 
 #include "phAvatarController.h"
+#include "phBullet.h"
 
 phAvatarController::phAvatarController(btRigidBody *body)
 : fBody(body) {
@@ -83,4 +84,10 @@ void phAvatarController::setYaw(float yaw) {
     btTransform xform = getTransform();
     xform.setRotation(rot);
     setTransform(xform);
+}
+
+Vector3 phAvatarController::getDirection() {
+    Quaternion rot = BtOgre::Convert::toOgre(getTransform().getRotation());
+    Vector3 dir = rot.xAxis();
+    return dir;
 }

@@ -21,7 +21,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
     TODO: replace networking stuff with ntNetMgr
 */
 #include "crClient.h"
-#include "ntMessage.h"
+#include "shared/ntMessage.h"
 
 #define kWalkSpeed 100
 #define kRunSpeed 200
@@ -109,8 +109,8 @@ bool crClient::init(void) {
     //connect to server if multiplayer is active
     if(ntMultiplayer) {
         LogManager::getSingletonPtr()->logMessage("MULTI: Active");
-        netMgr = new ntNetMgr(ntServerIP.c_str(), SERVER_PORT);
-        ntPeer = netMgr->connect();
+        ntMgr = new ntManager();
+        ntPeer = ntMgr->connect(ntServerIP.c_str(), SERVER_PORT);
         LogManager::getSingletonPtr()->logMessage("MULTI: Connecting to server " + ntServerIP);
     }
 
@@ -298,7 +298,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             ntMessage *outMsg;
             Vector3 pos;
 
-            inMsg = netMgr->getMessage(ntPacket);
+            inMsg = ntMgr->getMessage(ntPacket);
 
             switch(inMsg->getFlag()) {
                 case SPAWN_POSITION:
@@ -309,7 +309,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(pos.x) + ", " +
                             StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
                     phAvatar->setPosition(pos);
-                    netMgr->sendPlNameMsg(ntPlayerName);
+                    ntMgr->sendPlNameMsg(ntPlayerName);
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
                     ntConnected = true;
@@ -396,7 +396,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             comp = currPlayer->compare(myPlayer);
         if(((comp & ntPlayer::kWalk) != 0) || ((comp & ntPlayer::kTurn) != 0)) {
             //there are interesting changes, so send the player
-            netMgr->sendPlayerMsg(currPlayer);
+            ntMgr->sendPlayerMsg(currPlayer);
         }
         myPlayer = currPlayer;
 

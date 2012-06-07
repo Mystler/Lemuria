@@ -20,7 +20,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ntPlayer.h"
 
-#include "phAvatarController.h"
+#include <OgreQuaternion.h>
+#include <bullet/LinearMath/btTransform.h>
+#include "../phAvatarController.h"
 
 //ctor-----------------------------------
 //default--------------------------------
@@ -93,13 +95,12 @@ void ntPlayer::convertRotToFlag(float rotSpeed) {
 }
 
 Vector3 ntPlayer::getWalkDir() {
-    Quaternion rot = BtOgre::Convert::toOgre(fAvCtrl->getTransform().getRotation());
-    Vector3 frontDir = rot.xAxis();
+    Vector3 frontDir = fAvCtrl->getDirection();
     Vector3 leftDir = Vector3(frontDir.z, 0, -frontDir.x);
     frontDir.normalise();
     leftDir.normalise();
 
-    Vector3 dir = Vector3::ZERO;
+    Vector3 dir = Vector3(0, 0, 0);
     if((fWalking & kWalkForward) != 0)
         dir += frontDir;
     if((fWalking & kWalkBack) != 0)
@@ -108,7 +109,7 @@ Vector3 ntPlayer::getWalkDir() {
         dir += leftDir;
     if((fWalking & kWalkRight) != 0)
         dir -= leftDir;
-    if(dir != Vector3::ZERO)
+    if(dir != Vector3(0, 0, 0))
         dir.normalise();
 
     return dir;

@@ -59,8 +59,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #define SERVER_PORT 27015
 
-#include "ntPlayer.h"
-#include "ntNetMgr.h"
+#include "shared/ntPlayer.h"
+#include "shared/ntManager.h"
 #include "phAvatarController.h"
 #include "phBullet.h"
 #include "scObjectMgr.h"
@@ -96,7 +96,6 @@ private:
     Root *mRoot;
     RenderWindow *mWindow;
     SceneManager *mSceneMgr;
-    ntNetMgr *netMgr;
     bool btWireframe;
     //GUI
     CEGUI::Renderer *mGUIRenderer;
@@ -119,6 +118,7 @@ private:
     OgreMax::OgreMaxScene scMgr;
     scObjectMgr scObjMgr;
     //Multiplayer
+    ntManager *ntMgr;
     RakPeerInterface *ntPeer;
     Packet *ntPacket;
     SystemAddress ntServerAddress;
