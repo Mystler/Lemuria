@@ -412,11 +412,11 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             if(netPlayer->getTurning() != 0)
                 netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);
         }
-
-        //Do the magic physics simulation
-        phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
-        phBullet::getInstance().getDbgDrawer()->step();
     }
+
+    //Do the magic physics simulation
+    phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
+    phBullet::getInstance().getDbgDrawer()->step();
 
     return true;
 }
