@@ -82,6 +82,7 @@ void svServer::receive() {
     while(true) {
         for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
             ntMessage *inMsg = new ntMessage(packet);
+            ntMessage *out;
             uint32_t client_id = 0;
             RakString client_name;
 
@@ -100,7 +101,7 @@ void svServer::receive() {
                     client_id = (int)clients.size();
                     if(clients.size() > 0) {
                         printf("Sending new spawn position to other clients\n");
-                        ntMessage *out = new ntMessage(client_id, NEW_CLIENT);
+                        out = new ntMessage(client_id, NEW_CLIENT);
                         out->writeVector(0.0f, 1.8f, 0.0f);
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
@@ -108,16 +109,14 @@ void svServer::receive() {
                                             peer->GetSystemAddressFromGuid(clients[i].guid), false);
                             }
                         }
-                        delete out;
 
                         printf("Sending other clients position to new client\n");
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
-                                ntMessage *out = new ntMessage(client_id, NEW_CLIENT);
+                                out = new ntMessage(client_id, NEW_CLIENT);
                                 out->writeVector(clients[i].x, clients[i].y, clients[i].z);
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
-                        delete out;
                         }
                     } else {
                         printf("No other clients online, no need to send data\n");
@@ -125,10 +124,9 @@ void svServer::receive() {
 
                     clients.push_back(Client(client_id, packet->guid, false, 0.0f, 1.8f, 0.0f));
 
-                    ntMessage *out = new ntMessage(client_id, SPAWN_POSITION);
+                    out = new ntMessage(client_id, SPAWN_POSITION);
                     out->writeVector(0.0f, 1.8f, 0.0f);
                     peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-                    delete out;
                     break;
                 }
                 case ID_CONNECTION_LOST:
@@ -140,14 +138,13 @@ void svServer::receive() {
                             client_name = clients[i].name;
                             clients[i].offline = true;
                             printf("Client %i (%s) disconnected.\n", client_id, client_name.C_String());
-                            ntMessage *out = new ntMessage(client_id, DISCONNECT_PLAYER);
+                            out = new ntMessage(client_id, DISCONNECT_PLAYER);
                             for(size_t j = 0; j < clients.size(); ++j) {
                                 if(!clients[j].offline) {
                                     peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                                                peer->GetSystemAddressFromGuid(clients[j].guid), false);
                                 }
                             }
-                            delete out;
                         }
                     }
                     break;
@@ -156,7 +153,7 @@ void svServer::receive() {
                     ntPlayer *player = inMsg->readPlayer();
                     printf("Client %i sent new player", inMsg->getClientID());
                     player->getPosition(clients[client_id].x, clients[client_id].y, clients[client_id].z);
-                    ntMessage *out = new ntMessage(client_id, PLAYER_UPDATE);
+                    out = new ntMessage(client_id, PLAYER_UPDATE);
                     out->writePlayer(player);
                     for(size_t i = 0; i < clients.size(); i++) {
                         if(client_id != i && !clients[i].offline) {
@@ -165,7 +162,6 @@ void svServer::receive() {
                                        peer->GetSystemAddressFromGuid(clients[i].guid), false);
                         }
                     }
-                    delete out;
                     break;
                 }
                 case PLAYERNAME:
@@ -178,6 +174,7 @@ void svServer::receive() {
                     printf("Message with unknown identifier has arrived: %i\n", inMsg->getFlag());
                     break;
             }
+            delete out;
         }
     }
 }
