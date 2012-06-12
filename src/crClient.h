@@ -50,7 +50,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgreOggSound.h>
 
-#include <vector>
+#include <map>
 
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
@@ -62,7 +62,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "shared/ntPlayer.h"
 #include "shared/ntManager.h"
 #include "phAvatarController.h"
-#include "phBullet.h"
 #include "scObjectMgr.h"
 #include "3rdparty/ogremax/OgreMaxScene.hpp"
 
@@ -89,7 +88,8 @@ private:
     bool mouseMoved(const OIS::MouseEvent &arg);
     bool keyPressed(const OIS::KeyEvent &arg);
     bool keyReleased(const OIS::KeyEvent &arg);
-    uint32_t searchForPlayer(uint32_t clientID);
+    void getPlayerData(uint32_t clientID, ntPlayer *&player, phAvatarController *&ctrl);
+    void updatePlayer(ntPlayer *player);
 
     //Rendering
     String mPluginsCfg;
@@ -124,10 +124,7 @@ private:
     SystemAddress ntServerAddress;
     BitStream bsOut;
     bool ntConnected;
-    uint32_t ntClientID;
-    float ntPosSendTime, ntRotSendTime;
-    Vector3 ntCurPos, ntCurDir;
-    std::vector<ntPlayer*> players;
+    std::map<ntPlayer*, phAvatarController*> players;
     ntPlayer* myPlayer;
     float rotate;
 };

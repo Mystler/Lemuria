@@ -25,23 +25,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Ogre;
 
-class phAvatarController;
-
 class ntPlayer {
 public:
-    enum walkingFlags {
-        kNoWalk = 0,
-        kWalkForward = 1,
-        kWalkBack = 2,
-        kWalkLeft = 4,
-        kWalkRight = 8,
-        kRun = 16,
-    };
-    enum turningFlags {
-        kNoTurn = 0,
-        kTurnLeft = 1,
-        kTurnRight = 2,
-    };
     enum compFlags {
         kWalk = 1,
         kTurn = 2,
@@ -50,32 +35,25 @@ public:
     };
 
     //ctors
-    ntPlayer(phAvatarController *ctrl);
-    ntPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw);
-    ntPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw);
+    ntPlayer();
+    ntPlayer(uint32_t clientID, Vector3 vector, float yaw);
+    ntPlayer(uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw);
 
+    void setClientID(uint32_t id) { fClientID = id; }
     uint32_t getClientID() { return fClientID; }
+    void setWalking(uint32_t flag) { fWalking = flag; }
     uint32_t getWalking() { return fWalking; }
-    void setTurning(uint32_t turning) { fTurning = turning; }
+    void setTurning(uint32_t flag) { fTurning = flag; }
     uint32_t getTurning() { return fTurning; }
+    void setYaw(float yaw) { fYaw = yaw; }
     float getYaw() { return fYaw; }
+    void setPosition(Vector3 pos) { fPosition = pos; }
     Vector3 getPosition() { return fPosition; }
-    phAvatarController *getController() { return fAvCtrl; }
-    void setController(phAvatarController *ctrl) { fAvCtrl = ctrl; }
-    void setRunning() { fWalking |= kRun; }
 
-    //functions
-    void setToSavedPosition();
-    void setToPosition(Vector3 position);
-    void setToPosition(float x, float y, float z);
-    void convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight);
-    void convertRotToFlag(float rotSpeed);
-    Vector3 getWalkDir();
     uint32_t compare(ntPlayer *player);
     void getPosition(float &x, float &y, float &z);
 private:
-    phAvatarController *fAvCtrl;
-    uint32_t fClientID, fWalking, fTurning;
+    uint32_t fClientID, fTurning, fWalking;
     float fYaw;
     Vector3 fPosition;
 };

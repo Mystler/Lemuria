@@ -19,7 +19,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 *==LICENSE==*/
 
 #include "phAvatarController.h"
-#include "phBullet.h"
+#include "shared/ntPlayer.h"
 
 phAvatarController::phAvatarController(btRigidBody *body)
 : fBody(body) {
@@ -58,6 +58,33 @@ bool phAvatarController::avatarOnGround() {
     return false;
 }
 
+void phAvatarController::setWalkingFlag(bool forward, bool backward, bool left, bool right, bool run) {
+    fWalkingFlag = kNoWalk;
+    if(forward)
+        fWalkingFlag |= kWalkForward;
+    if(backward)
+        fWalkingFlag |= kWalkBack;
+    if(left)
+        fWalkingFlag |= kWalkLeft;
+    if(right)
+        fWalkingFlag |= kWalkRight;
+    if(run)
+        fWalkingFlag |= kRun;
+}
+
+void phAvatarController::setTurningFlag(float rotSpeed) {
+    fTurningFlag = kNoTurn;
+    if(rotSpeed < 0)
+        fTurningFlag |= kTurnLeft;
+    if(rotSpeed > 0)
+        fTurningFlag |= kTurnRight;
+}
+
+void phAvatarController::getFlagsFromPlayer(ntPlayer *player) {
+    fWalkingFlag = player->getWalking();
+    fTurningFlag = player->getTurning();
+}
+
 btTransform phAvatarController::getTransform() {
     btTransform xform;
     fBody->getMotionState()->getWorldTransform(xform);
@@ -79,6 +106,11 @@ void phAvatarController::setPosition(Vector3 pos) {
     setTransform(xform);
 }
 
+float phAvatarController::getYaw() {
+    btQuaternion rot = getTransform().getRotation();
+    return rot.getAngle();
+}
+
 void phAvatarController::setYaw(float yaw) {
     btQuaternion rot = btQuaternion(btVector3(0, 1, 0), yaw);
     btTransform xform = getTransform();
@@ -88,6 +120,47 @@ void phAvatarController::setYaw(float yaw) {
 
 Vector3 phAvatarController::getDirection() {
     Quaternion rot = BtOgre::Convert::toOgre(getTransform().getRotation());
-    Vector3 dir = rot.xAxis();
+    Vector3 dir = rot.zAxis();
+    return dir;
+}
+
+Vector3 phAvatarController::getWalkingDirection() {
+    Vector3 frontDir = getDirection();
+    Vector3 leftDir = Vector3(frontDir.z, 0, -frontDir.x);
+    frontDir.normalise();
+    leftDir.normalise();
+
+    Vector3 dir = Vector3::ZERO;
+    if(fWalkingFlag & kWalkForward)
+        dir += frontDir;
+    if(fWalkingFlag & kWalkBack)
+        dir -= frontDir;
+    if(fWalkingFlag & kWalkLeft)
+        dir += leftDir;
+    if(fWalkingFlag & kWalkRight)
+        dir -= leftDir;
+    if(dir != Vector3::ZERO)
+        dir.normalise();
+
+    return dir;
+}
+
+Vector3 phAvatarController::getFlymodeDirection(Vector3 camDirection) {
+    Vector3 leftDir = Vector3(camDirection.z, 0, -camDirection.x);
+    camDirection.normalise();
+    leftDir.normalise();
+
+    Vector3 dir = Vector3::ZERO;
+    if(fWalkingFlag & kWalkForward)
+        dir += camDirection;
+    if(fWalkingFlag & kWalkBack)
+        dir -= camDirection;
+    if(fWalkingFlag & kWalkLeft)
+        dir += leftDir;
+    if(fWalkingFlag & kWalkRight)
+        dir -= leftDir;
+    if(dir != Vector3::ZERO)
+        dir.normalise();
+
     return dir;
 }

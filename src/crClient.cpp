@@ -191,6 +191,13 @@ void crClient::Scene01() {
     avatarNode->setPosition(Vector3(0, 1.8f, 0));
     phAvatar = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(avatarNode));
 
+    //sync local ntPlayer in Multiplayer mode
+    if(ntMultiplayer) {
+        myPlayer = new ntPlayer();
+        myPlayer->setPosition(phAvatar->getPosition());
+        myPlayer->setYaw(phAvatar->getYaw());
+    }
+
     scMgr.Load("test.scene", mWindow, 0, mSceneMgr);
     scObjMgr.processScene(mSceneMgr);
 
@@ -246,31 +253,14 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
 
     Vector3 avWalkDir;
     if(avFly) {
-        avWalkDir = mCamera->getDirection();
-    } else {
-        avWalkDir = Vector3(mCamera->getDirection().x, 0, mCamera->getDirection().z);
-    }
-    Vector3 avWalkLeftDir = Vector3(mCamera->getDirection().z, 0, -mCamera->getDirection().x);
-    avWalkDir.normalise();
-    avWalkLeftDir.normalise();
-
-    Vector3 direction = Vector3::ZERO;
-    if(avWalk)
-        direction += avWalkDir;
-    if(avWalkBack)
-        direction -= avWalkDir;
-    if(avWalkLeft)
-        direction += avWalkLeftDir;
-    if(avWalkRight)
-        direction -= avWalkLeftDir;
-    if(direction != Vector3::ZERO)
-        direction.normalise();
-
-    if(avFly) {
+        phAvatar->setWalkingFlag(false, false, false, false);
+        avWalkDir = phAvatar->getFlymodeDirection(mCamera->getDirection());
         if(avWalk || avWalkBack || avWalkLeft || avWalkRight)
-            mCamera->move(avWalkSpeed * direction * evt.timeSinceLastFrame);
+            mCamera->move(avWalkSpeed/10 * avWalkDir * evt.timeSinceLastFrame);
     } else {
-        phAvatar->move(avWalkSpeed * evt.timeSinceLastFrame, direction, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
+        phAvatar->setWalkingFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight, kShiftDown);
+        avWalkDir = phAvatar->getWalkingDirection();
+        phAvatar->move(avWalkSpeed * evt.timeSinceLastFrame, avWalkDir, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
         Vector3 avCamPos = phAvatar->getPosition() + Vector3(0, 0.7f, 0);
         mCamera->setPosition(avCamPos);
     }
@@ -279,6 +269,8 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         phAvatar->jump();
         avJump = false;
     }
+
+    phAvatar->setTurningFlag(rotate);
 
     //Multiplayer
     if(ntMultiplayer) {
@@ -302,12 +294,13 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             switch(inMsg->getFlag()) {
                 case SPAWN_POSITION:
                     //get position and spawn
-                    ntClientID = inMsg->getClientID();
+                    myPlayer->setClientID(inMsg->getClientID());
                     pos = inMsg->readVector();
-                    LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(ntClientID));
+                    LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(myPlayer->getClientID()));
                     LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(pos.x) + ", " +
                             StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
                     phAvatar->setPosition(pos);
+                    myPlayer->setPosition(pos);
                     ntMgr->sendPlNameMsg(ntPlayerName);
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
@@ -321,11 +314,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     if(mSceneMgr->hasSceneNode(playerNode)) {
-                        playerCtrl = players[searchForPlayer(ntNetClientID)]->getController();
-                        if(playerCtrl) //<--------isn't !playerCtrl?
-                            player->setController(playerCtrl); //can be deleted when ntPlayer is sent
-                        players[searchForPlayer(ntNetClientID)] = player;
-                        player->setToSavedPosition();
+                        updatePlayer(player);
+                        playerCtrl = players[player];
+                        playerCtrl->getFlagsFromPlayer(player);
+                        playerCtrl->setPosition(player->getPosition());
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
@@ -347,10 +339,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer->scale(Vector3(0.035f, 0.035f, 0.035f));
                     ndPlayer->setDirection(Vector3::UNIT_X);
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
-                    player = new ntPlayer(playerCtrl, ntNetClientID, pos, Math::PI);
-                    player->setToSavedPosition();
-
-                    players.push_back(player);
+                    player = new ntPlayer(ntNetClientID, pos, Math::PI);
+                    playerCtrl->getFlagsFromPlayer(player);
+                    playerCtrl->setPosition(player->getPosition());
+                    players[player] = playerCtrl;
                     break;
                 case DISCONNECT_PLAYER:
                     bsIn.Read(ntNetClientID);
@@ -361,8 +353,9 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     playerEnt.append(playerNr.str());
-                    delete players[searchForPlayer(ntNetClientID)]->getController();
-                    players.erase(players.begin() + searchForPlayer(ntNetClientID));
+                    getPlayerData(ntNetClientID, player, playerCtrl);
+                    players.erase(player);
+                    delete playerCtrl;
                     if(mSceneMgr->hasSceneNode(playerNode)) {
                         mSceneMgr->destroyEntity(playerEnt);
                         mSceneMgr->destroySceneNode(playerNode);
@@ -382,35 +375,27 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             throw Exception(Exception::ERR_INVALID_STATE, "No connection to the server! Multiplayer is set", "multiplayer.cfg");
         }
 
-        //check my Player for changes
-        ntCurDir = mCamera->getRealDirection();
-        float yaw = mCamera->getOrientation().getYaw().valueRadians() + Math::PI;
-        ntPlayer *currPlayer = new ntPlayer(phAvatar, ntClientID, phAvatar->getPosition(), yaw);
-        currPlayer->convertDirToFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight);
-        if(kShiftDown && !avWalkBack)
-            currPlayer->setRunning();
-        currPlayer->convertRotToFlag(rotate);
-        uint32_t comp = 0;
-        if(myPlayer)
-            comp = currPlayer->compare(myPlayer);
-        if(((comp & ntPlayer::kWalk) != 0) || ((comp & ntPlayer::kTurn) != 0)) {
-            //there are interesting changes, so send the player
-            ntMgr->sendPlayerMsg(currPlayer);
+        //check my Player for changes and send those
+        if(phAvatar->getWalkingFlag() != myPlayer->getWalking() ||
+            phAvatar->getTurningFlag() != myPlayer->getTurning()) {
+            myPlayer->setWalking(phAvatar->getWalkingFlag());
+            myPlayer->setTurning(phAvatar->getTurningFlag());
+            ntMgr->sendPlayerMsg(myPlayer);
         }
-        myPlayer = currPlayer;
 
         //move other players
-        for(size_t i = 0; i < players.size(); i++) {
-            ntPlayer *netPlayer = players[i];
-            phAvatarController *netAvCtrl = netPlayer->getController();
-            if(netPlayer->getWalking() != ntPlayer::kNoWalk) {
+        std::map<ntPlayer*, phAvatarController*>::iterator i;
+        for(i = players.begin(); i != players.end(); i++) {
+            ntPlayer *netPlayer = (*i).first;
+            phAvatarController *netAvCtrl = (*i).second;
+            if(netPlayer->getWalking() != phAvatarController::kNoWalk) {
                 float speed = kWalkSpeed;
-                if((netPlayer->getWalking() & ntPlayer::kRun) != 0)
+                if(netPlayer->getWalking() & phAvatarController::kRun)
                     speed = kRunSpeed;
-                netAvCtrl->move(speed * evt.timeSinceLastFrame, netPlayer->getWalkDir());
+                netAvCtrl->move(speed * evt.timeSinceLastFrame, netAvCtrl->getWalkingDirection());
             }
-            if(netPlayer->getTurning() != 0)
-                netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);
+            /*if(netPlayer->getTurning() != phAvatarController::kNoTurn)
+                netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);*/
         }
     }
 
@@ -421,15 +406,29 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     return true;
 }
 
-uint32_t crClient::searchForPlayer(uint32_t clientID) {
-    uint32_t r = 0;
-    for(size_t i = 0; i < players.size(); i++) {
-        if(players[i]->getClientID() == clientID) {
-            r = i;
+void crClient::getPlayerData(uint32_t clientID, ntPlayer *&player, phAvatarController *&ctrl) {
+    uint32_t idx = 0;
+    std::map<ntPlayer*, phAvatarController*>::iterator i;
+    for(i = players.begin(); i != players.end(); i++) {
+        if((*i).first->getClientID() == clientID) {
+            player = (*i).first;
+            ctrl = (*i).second;
             break;
         }
     }
-    return r;
+}
+
+void crClient::updatePlayer(ntPlayer *player) {
+    phAvatarController *ctrl;
+    std::map<ntPlayer*, phAvatarController*>::iterator i;
+    for(i = players.begin(); i != players.end(); i++) {
+        if((*i).first->getClientID() == player->getClientID()) {
+            ctrl = (*i).second;
+            players.erase(i);
+            break;
+        }
+    }
+    players[player] = ctrl;
 }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32

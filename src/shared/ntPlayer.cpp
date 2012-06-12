@@ -20,15 +20,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ntPlayer.h"
 
-#include <OgreQuaternion.h>
-#include <LinearMath/btTransform.h>
-#include "../phAvatarController.h"
-
 //ctor-----------------------------------
 //default--------------------------------
-ntPlayer::ntPlayer(phAvatarController *ctrl)
-: fAvCtrl(ctrl),
-  fClientID(0),
+ntPlayer::ntPlayer()
+: fClientID(0),
   fWalking(0),
   fTurning(0),
   fPosition(Vector3(0,0,0)),
@@ -37,9 +32,8 @@ ntPlayer::ntPlayer(phAvatarController *ctrl)
 
 //ctor---------------------------------
 //direction only-----------------------
-ntPlayer::ntPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, float yaw)
-: fAvCtrl(ctrl),
-  fClientID(clientID),
+ntPlayer::ntPlayer(uint32_t clientID, Vector3 vector, float yaw)
+: fClientID(clientID),
   fWalking(0),
   fTurning(0),
   fPosition(vector),
@@ -48,71 +42,12 @@ ntPlayer::ntPlayer(phAvatarController *ctrl, uint32_t clientID, Vector3 vector, 
 
 //ctor---------------------------------
 //complete-----------------------------
-ntPlayer::ntPlayer(phAvatarController *ctrl, uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw)
-: fAvCtrl(ctrl),
-  fClientID(clientID),
+ntPlayer::ntPlayer(uint32_t clientID, uint32_t walking, uint32_t turning, Vector3 vector, float yaw)
+: fClientID(clientID),
   fWalking(walking),
   fTurning(turning),
   fPosition(vector),
   fYaw(yaw) {
-}
-
-void ntPlayer::setToSavedPosition() {
-    if(fAvCtrl) {
-        fAvCtrl->setPosition(fPosition);
-        fAvCtrl->setYaw(fYaw);
-    }
-}
-
-void ntPlayer::setToPosition(Vector3 position) {
-    if(fAvCtrl)
-        fAvCtrl->setPosition(position);
-}
-
-void ntPlayer::setToPosition(float x, float y, float z) {
-    if(fAvCtrl)
-        fAvCtrl->setPosition(Vector3(x, y, z));
-}
-
-void ntPlayer::convertDirToFlag(bool avWalk, bool avWalkBack, bool avWalkLeft, bool avWalkRight) {
-    fWalking = kNoWalk;
-    if(avWalk)
-        fWalking |= kWalkForward;
-    if(avWalkBack)
-        fWalking |= kWalkBack;
-    if(avWalkLeft)
-        fWalking |= kWalkLeft;
-    if(avWalkRight)
-        fWalking |= kWalkRight;
-}
-
-void ntPlayer::convertRotToFlag(float rotSpeed) {
-    fTurning = kNoTurn;
-    if(rotSpeed < 0)
-        fTurning |= kTurnLeft;
-    if(rotSpeed > 0)
-        fTurning |= kTurnRight;
-}
-
-Vector3 ntPlayer::getWalkDir() {
-    Vector3 frontDir = fAvCtrl->getDirection();
-    Vector3 leftDir = Vector3(frontDir.z, 0, -frontDir.x);
-    frontDir.normalise();
-    leftDir.normalise();
-
-    Vector3 dir = Vector3(0, 0, 0);
-    if(fWalking & kWalkForward)
-        dir += frontDir;
-    if(fWalking & kWalkBack)
-        dir -= frontDir;
-    if(fWalking & kWalkLeft)
-        dir += leftDir;
-    if(fWalking & kWalkRight)
-        dir -= leftDir;
-    if(dir != Vector3(0, 0, 0))
-        dir.normalise();
-
-    return dir;
 }
 
 uint32_t ntPlayer::compare(ntPlayer *player) {
