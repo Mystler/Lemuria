@@ -51,7 +51,6 @@ public:
     Vector3 getPosition() { return fPosition; }
 
     uint32_t compare(ntPlayer *player);
-    void getPosition(float &x, float &y, float &z);
 private:
     uint32_t fClientID, fTurning, fWalking;
     float fYaw;

@@ -47,16 +47,12 @@ public:
     RakNetGUID guid;
     RakString name;
     bool offline;
-    float x, y, z;
     ntPlayer *player;
 
-    Client(uint32_t passed_id, RakNetGUID passed_guid, bool passed_offline, float posX, float posY, float posZ)
+    Client(uint32_t passed_id, RakNetGUID passed_guid, bool passed_offline)
     : id(passed_id),
       guid(passed_guid),
-      offline(passed_offline),
-      x(posX),
-      y(posY),
-      z(posZ) { }
+      offline(passed_offline) { }
 };
 
 svServer::svServer() {
@@ -114,7 +110,7 @@ void svServer::receive() {
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
                                 out = new ntMessage(client_id, NEW_CLIENT);
-                                out->writeVector(clients[i].x, clients[i].y, clients[i].z);
+                                out->writeVector(clients[i].player->getPosition());
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
                         }
@@ -122,7 +118,7 @@ void svServer::receive() {
                         printf("No other clients online, no need to send data\n");
                     }
 
-                    clients.push_back(Client(client_id, packet->guid, false, 0.0f, 1.8f, 0.0f));
+                    clients.push_back(Client(client_id, packet->guid, false));
 
                     out = new ntMessage(client_id, SPAWN_POSITION);
                     out->writeVector(0.0f, 1.8f, 0.0f);
@@ -151,8 +147,8 @@ void svServer::receive() {
                 }
                 case PLAYER_UPDATE: {
                     ntPlayer *player = inMsg->readPlayer();
-                    printf("Client %i sent new player", inMsg->getClientID());
-                    player->getPosition(clients[client_id].x, clients[client_id].y, clients[client_id].z);
+                    printf("Client %i sent new player\n", inMsg->getClientID());
+                    clients[client_id].player = player;
                     out = new ntMessage(client_id, PLAYER_UPDATE);
                     out->writePlayer(player);
                     for(size_t i = 0; i < clients.size(); i++) {
