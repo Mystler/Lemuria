@@ -55,14 +55,6 @@ public:
       offline(passed_offline) { }
 };
 
-svServer::svServer() {
-    peer = RakPeerInterface::GetInstance();
-    SocketDescriptor *sockDesc = new SocketDescriptor(SERVER_PORT, 0);
-    peer->Startup(MAX_CLIENTS, sockDesc, 1);
-    printf("Starting the AkshahNet Lemuria server.\nWaiting for connections...\n");
-    peer->SetMaximumIncomingConnections(MAX_CLIENTS);
-}
-
 svServer::~svServer() {
     RakPeerInterface::DestroyInstance(peer);
 }
@@ -70,6 +62,14 @@ svServer::~svServer() {
 svServer &svServer::getInstance() {
     static svServer svInstance;
     return svInstance;
+}
+
+void svServer::init() {
+    peer = RakPeerInterface::GetInstance();
+    SocketDescriptor *sockDesc = new SocketDescriptor(SERVER_PORT, 0);
+    peer->Startup(MAX_CLIENTS, sockDesc, 1);
+    printf("Starting the AkshahNet Lemuria server.\nWaiting for connections...\n");
+    peer->SetMaximumIncomingConnections(MAX_CLIENTS);
 }
 
 void svServer::receive() {
@@ -100,16 +100,15 @@ void svServer::receive() {
                         out = new ntMessage(client_id, NEW_CLIENT);
                         out->writeVector(0.0f, 1.8f, 0.0f);
                         for(size_t i = 0; i < clients.size(); i++) {
-                            if(!clients[i].offline) {
+                            if(!clients[i].offline)
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                                            peer->GetSystemAddressFromGuid(clients[i].guid), false);
-                            }
+                                    peer->GetSystemAddressFromGuid(clients[i].guid), false);
                         }
 
                         printf("Sending other clients position to new client\n");
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
-                                out = new ntMessage(client_id, NEW_CLIENT);
+                                out = new ntMessage(i, NEW_CLIENT);
                                 out->writeVector(clients[i].player->getPosition());
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
@@ -136,10 +135,9 @@ void svServer::receive() {
                             printf("Client %i (%s) disconnected.\n", client_id, client_name.C_String());
                             out = new ntMessage(client_id, DISCONNECT_PLAYER);
                             for(size_t j = 0; j < clients.size(); ++j) {
-                                if(!clients[j].offline) {
+                                if(!clients[j].offline)
                                     peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                                               peer->GetSystemAddressFromGuid(clients[j].guid), false);
-                                }
+                                        peer->GetSystemAddressFromGuid(clients[j].guid), false);
                             }
                         }
                     }
@@ -152,11 +150,9 @@ void svServer::receive() {
                     out = new ntMessage(client_id, PLAYER_UPDATE);
                     out->writePlayer(player);
                     for(size_t i = 0; i < clients.size(); i++) {
-                        if(client_id != i && !clients[i].offline) {
-                            //std::cout << "  To: " << i << " - " << clients[i].guid.g << std::endl;
+                        if(client_id != i && !clients[i].offline)
                             peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                                       peer->GetSystemAddressFromGuid(clients[i].guid), false);
-                        }
+                                peer->GetSystemAddressFromGuid(clients[i].guid), false);
                     }
                     break;
                 }
@@ -177,5 +173,6 @@ void svServer::receive() {
 
 int main() {
     svServer &app = svServer::getInstance();
+    app.init();
     app.receive();
 }

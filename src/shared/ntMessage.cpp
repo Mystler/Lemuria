@@ -26,14 +26,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 //ctor---------------------
 //out----------------------
-ntMessage::ntMessage()
-: fClientID(0),
-  fFlag(0) {
-}
-
-ntMessage::ntMessage(uint32_t clientID, uint32_t flag)
-: fClientID(clientID) {
-  fFlag = (MessageID)flag;
+ntMessage::ntMessage(uint32_t senderID, uint32_t msgFlag)
+: fClientID(senderID) {
+  fFlag = (MessageID)msgFlag;
   fStreamOut.Write(fFlag);
   fStreamOut.Write(fClientID);
 }
@@ -82,9 +77,9 @@ ntPlayer *ntMessage::readPlayer() {
 
 //write
 void ntMessage::writeVector(Vector3 vector) {
-    fStreamOut.Write(vector.x);
-    fStreamOut.Write(vector.y);
-    fStreamOut.Write(vector.z);
+    fStreamOut.Write((float)vector.x);
+    fStreamOut.Write((float)vector.y);
+    fStreamOut.Write((float)vector.z);
 }
 
 void ntMessage::writeVector(float x, float y, float z) {

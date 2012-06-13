@@ -29,16 +29,11 @@ using namespace RakNet;
 
 class svServer {
 public:
-    //ctor
-    svServer();
-
-    //dtor
-    ~svServer();
-
     static svServer &getInstance();
+    void init();
     void receive();
-
 private:
+    ~svServer();
     RakPeerInterface *peer;
 };
 #endif

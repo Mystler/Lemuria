@@ -278,7 +278,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             BitStream bsIn(ntPacket->data, ntPacket->length, false);
             bsIn.IgnoreBytes(sizeof(MessageID));
 
-            ntMessage *inMsg = new ntMessage();
+            ntMessage *inMsg;
             uint32_t ntNetClientID;
             Entity *entPlayer;
             SceneNode *ndPlayer;

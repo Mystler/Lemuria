@@ -37,9 +37,8 @@ using namespace RakNet;
 class ntMessage {
 public:
     //ctor
-    ntMessage();
-    ntMessage(uint32_t clientID, uint32_t flag);
-    ntMessage(Packet *packet);
+    ntMessage(uint32_t senderID, uint32_t msgFlag); //outgoing
+    ntMessage(Packet *packet); //incoming
     //dtor
     ~ntMessage();
 
