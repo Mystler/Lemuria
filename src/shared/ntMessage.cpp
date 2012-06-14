@@ -56,9 +56,8 @@ Vector3 ntMessage::readVector() {
     fStreamIn.Read(x);
     fStreamIn.Read(y);
     fStreamIn.Read(z);
-    Vector3 r = Vector3(x,y,z);
 
-    return r;
+    return Vector3(x, y, z);
 }
 
 RakString ntMessage::readString() {
@@ -69,10 +68,20 @@ RakString ntMessage::readString() {
 }
 
 ntPlayer *ntMessage::readPlayer() {
-    ntPlayer *r;
-    fStreamIn.Read(r);
+    uint32_t clientID, walking, turning;
+    Vector3 pos;
+    float x, y, z, yaw;
+    fStreamIn.Read(clientID);
+    fStreamIn.Read(walking);
+    fStreamIn.Read(turning);
+    fStreamIn.Read(x);
+    fStreamIn.Read(y);
+    fStreamIn.Read(z);
+    fStreamIn.Read(yaw);
 
-    return r;
+    pos = Vector3(x, y, z);
+
+    return new ntPlayer(clientID, walking, turning, pos, yaw);
 }
 
 //write
@@ -93,5 +102,12 @@ void ntMessage::writeString(RakString string) {
 }
 
 void ntMessage::writePlayer(ntPlayer *player) {
-    fStreamOut.Write(player);
+    fStreamOut.Write(player->getClientID());
+    fStreamOut.Write(player->getWalking());
+    fStreamOut.Write(player->getTurning());
+    Vector3 pos = player->getPosition();
+    fStreamOut.Write((float)pos.x);
+    fStreamOut.Write((float)pos.y);
+    fStreamOut.Write((float)pos.z);
+    fStreamOut.Write(player->getYaw());
 }

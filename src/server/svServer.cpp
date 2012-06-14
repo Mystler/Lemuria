@@ -42,17 +42,17 @@ enum GameMessages {
 
 //helper struct
 struct Client {
-public:
     uint32_t id;
     RakNetGUID guid;
     RakString name;
     bool offline;
     ntPlayer *player;
 
-    Client(uint32_t passed_id, RakNetGUID passed_guid, bool passed_offline)
+    Client(uint32_t passed_id, RakNetGUID passed_guid, bool passed_offline, ntPlayer *passed_player)
     : id(passed_id),
       guid(passed_guid),
-      offline(passed_offline) { }
+      offline(passed_offline),
+      player(passed_player) { }
 };
 
 svServer::~svServer() {
@@ -109,6 +109,9 @@ void svServer::receive() {
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
                                 out = new ntMessage(i, NEW_CLIENT);
+                                ntPlayer *player = clients[i].player;
+                                Vector3 pos = player->getPosition();
+                                printf("Writing position %f, %f, %f \n", pos.x, pos.y, pos.z);
                                 out->writeVector(clients[i].player->getPosition());
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
@@ -117,7 +120,7 @@ void svServer::receive() {
                         printf("No other clients online, no need to send data\n");
                     }
 
-                    clients.push_back(Client(client_id, packet->guid, false));
+                    clients.push_back(Client(client_id, packet->guid, false, new ntPlayer(client_id, Vector3(0,0,0), 0.f)));
 
                     out = new ntMessage(client_id, SPAWN_POSITION);
                     out->writeVector(0.0f, 1.8f, 0.0f);
