@@ -35,11 +35,13 @@ public:
     ~ntManager();
     RakPeerInterface *connect(const char *host, unsigned short port);
     ntMessage *getMessage(Packet *packet);
+    void setMyClientID(uint32_t id) { fMyClientID = id; }
     void sendPlNameMsg(RakString name);
     void sendPlayerMsg(ntPlayer *player);
 private:
     RakPeerInterface *fPeer;
     SystemAddress fServerAddress;
     uint32_t fClientID;
+    uint32_t fMyClientID;
 };
 #endif

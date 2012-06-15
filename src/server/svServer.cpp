@@ -95,10 +95,11 @@ void svServer::receive() {
                 case ID_NEW_INCOMING_CONNECTION: {
                     printf("New connection incoming.\n");
                     client_id = (int)clients.size();
+                    ntPlayer *newPlayer = new ntPlayer(client_id, Vector3(0.f, 1.8f, 0.f), 3.14f);
                     if(clients.size() > 0) {
                         printf("Sending new spawn position to other clients\n");
                         out = new ntMessage(client_id, NEW_CLIENT);
-                        out->writeVector(0.0f, 1.8f, 0.0f);
+                        out->writePlayer(newPlayer);
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline)
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
@@ -109,10 +110,7 @@ void svServer::receive() {
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
                                 out = new ntMessage(i, NEW_CLIENT);
-                                ntPlayer *player = clients[i].player;
-                                Vector3 pos = player->getPosition();
-                                printf("Writing position %f, %f, %f \n", pos.x, pos.y, pos.z);
-                                out->writeVector(clients[i].player->getPosition());
+                                out->writePlayer(clients[i].player);
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
                         }
@@ -120,10 +118,10 @@ void svServer::receive() {
                         printf("No other clients online, no need to send data\n");
                     }
 
-                    clients.push_back(Client(client_id, packet->guid, false, new ntPlayer(client_id, Vector3(0,0,0), 0.f)));
+                    clients.push_back(Client(client_id, packet->guid, false, newPlayer));
 
                     out = new ntMessage(client_id, SPAWN_POSITION);
-                    out->writeVector(0.0f, 1.8f, 0.0f);
+                    out->writePlayer(newPlayer);
                     peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                     break;
                 }
@@ -148,12 +146,14 @@ void svServer::receive() {
                 }
                 case PLAYER_UPDATE: {
                     ntPlayer *player = inMsg->readPlayer();
-                    printf("Client %i sent new player\n", inMsg->getClientID());
+                    client_id = inMsg->getClientID();
+                    //printf("Client %i sent new player\n", client_id);
                     clients[client_id].player = player;
                     out = new ntMessage(client_id, PLAYER_UPDATE);
                     out->writePlayer(player);
                     for(size_t i = 0; i < clients.size(); i++) {
                         if(client_id != i && !clients[i].offline)
+                            //printf("sending new player to %i\n", i);
                             peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                                 peer->GetSystemAddressFromGuid(clients[i].guid), false);
                     }

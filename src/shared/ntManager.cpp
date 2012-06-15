@@ -54,14 +54,14 @@ ntMessage *ntManager::getMessage(Packet *packet) {
 }
 
 void ntManager::sendPlNameMsg(RakString name) {
-    ntMessage *out = new ntMessage(fClientID, PLAYERNAME);
+    ntMessage *out = new ntMessage(fMyClientID, PLAYERNAME);
     out->writeString(name);
     fPeer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
     delete out;
 }
 
 void ntManager::sendPlayerMsg(ntPlayer *player) {
-    ntMessage *out = new ntMessage(fClientID, PLAYER_UPDATE);
+    ntMessage *out = new ntMessage(fMyClientID, PLAYER_UPDATE);
     out->writePlayer(player);
     fPeer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
     delete out;

@@ -294,13 +294,12 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             switch(inMsg->getFlag()) {
                 case SPAWN_POSITION:
                     //get position and spawn
-                    myPlayer->setClientID(inMsg->getClientID());
-                    pos = inMsg->readVector();
+                    myPlayer = inMsg->readPlayer();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(myPlayer->getClientID()));
                     LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(pos.x) + ", " +
                             StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
-                    phAvatar->setPosition(pos);
-                    myPlayer->setPosition(pos);
+                    phAvatar->setPosition(myPlayer->getPosition());
+                    ntMgr->setMyClientID(inMsg->getClientID());
                     ntMgr->sendPlNameMsg(ntPlayerName);
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
@@ -324,7 +323,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     break;
                 case NEW_CLIENT:
                     ntNetClientID = inMsg->getClientID();
-                    pos = inMsg->readVector();
+                    player = inMsg->readPlayer();
                     LogManager::getSingletonPtr()->logMessage("MULTI: New Client " +
                             StringConverter::toString(ntNetClientID) + " - " + StringConverter::toString(pos.x) +
                             ", " + StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
@@ -339,7 +338,6 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer->scale(Vector3(0.035f, 0.035f, 0.035f));
                     ndPlayer->setDirection(Vector3::UNIT_X);
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
-                    player = new ntPlayer(ntNetClientID, pos, Math::PI);
                     playerCtrl->getFlagsFromPlayer(player);
                     playerCtrl->setPosition(player->getPosition());
                     players[player] = playerCtrl;
