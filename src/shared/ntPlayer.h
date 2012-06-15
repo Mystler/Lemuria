@@ -25,6 +25,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Ogre;
 
+#define SPAWNPOS Vector3(0, 1.8f, 0)
+
 class ntPlayer {
 public:
     enum compFlags {

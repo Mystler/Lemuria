@@ -178,7 +178,7 @@ SceneManager *crClient::getSceneManager() {
 void crClient::Scene01() {
     //init Camera and Viewport
     mCamera = mSceneMgr->createCamera("PlayerCam");
-    mCamera->setPosition(Vector3(0, 1.8f, 0));
+    mCamera->setPosition(SPAWNPOS);
     mCamera->lookAt(Vector3::UNIT_X * 30);
     mCamera->setNearClipDistance(0.01f);
 
@@ -188,15 +188,8 @@ void crClient::Scene01() {
 
     //create Avatar
     SceneNode *avatarNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("avatarNode");
-    avatarNode->setPosition(Vector3(0, 1.8f, 0));
+    avatarNode->setPosition(SPAWNPOS);
     phAvatar = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(avatarNode));
-
-    //sync local ntPlayer in Multiplayer mode
-    if(ntMultiplayer) {
-        myPlayer = new ntPlayer();
-        myPlayer->setPosition(phAvatar->getPosition());
-        myPlayer->setYaw(phAvatar->getYaw());
-    }
 
     scMgr.Load("test.scene", mWindow, 0, mSceneMgr);
     scObjMgr.processScene(mSceneMgr);
