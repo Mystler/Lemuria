@@ -88,8 +88,6 @@ private:
     bool mouseMoved(const OIS::MouseEvent &arg);
     bool keyPressed(const OIS::KeyEvent &arg);
     bool keyReleased(const OIS::KeyEvent &arg);
-    void getPlayerData(uint32_t clientID, ntPlayer *&player, phAvatarController *&ctrl);
-    void updatePlayer(ntPlayer *player);
 
     //Rendering
     String mPluginsCfg;
@@ -124,7 +122,7 @@ private:
     SystemAddress ntServerAddress;
     BitStream bsOut;
     bool ntConnected;
-    std::map<ntPlayer*, phAvatarController*> players;
+    std::map<uint32_t, phAvatarController*> ntPlayers;
     ntPlayer* myPlayer;
     float rotate;
 };

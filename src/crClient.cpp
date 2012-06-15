@@ -268,9 +268,6 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     //Multiplayer
     if(ntMultiplayer) {
         for(ntPacket = ntPeer->Receive(); ntPacket; ntPeer->DeallocatePacket(ntPacket), ntPacket = ntPeer->Receive()) {
-            BitStream bsIn(ntPacket->data, ntPacket->length, false);
-            bsIn.IgnoreBytes(sizeof(MessageID));
-
             ntMessage *inMsg;
             uint32_t ntNetClientID;
             Entity *entPlayer;
@@ -306,10 +303,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     if(mSceneMgr->hasSceneNode(playerNode)) {
-                        updatePlayer(player);
-                        playerCtrl = players[player];
+                        playerCtrl = ntPlayers[ntNetClientID];
                         playerCtrl->getFlagsFromPlayer(player);
                         playerCtrl->setPosition(player->getPosition());
+                        playerCtrl->setYaw(player->getYaw());
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
@@ -333,10 +330,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
                     playerCtrl->getFlagsFromPlayer(player);
                     playerCtrl->setPosition(player->getPosition());
-                    players[player] = playerCtrl;
+                    ntPlayers[ntNetClientID] = playerCtrl;
                     break;
                 case DISCONNECT_PLAYER:
-                    bsIn.Read(ntNetClientID);
+                    ntNetClientID = inMsg->getClientID();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Client " +
                             StringConverter::toString(ntNetClientID) + "disconnected");
                     playerEnt = "entPlayer";
@@ -344,9 +341,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerNr << ntNetClientID;
                     playerNode.append(playerNr.str());
                     playerEnt.append(playerNr.str());
-                    getPlayerData(ntNetClientID, player, playerCtrl);
-                    players.erase(player);
-                    delete playerCtrl;
+                    ntPlayers.erase(ntNetClientID);
                     if(mSceneMgr->hasSceneNode(playerNode)) {
                         mSceneMgr->destroyEntity(playerEnt);
                         mSceneMgr->destroySceneNode(playerNode);
@@ -375,17 +370,17 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         }
 
         //move other players
-        std::map<ntPlayer*, phAvatarController*>::iterator i;
-        for(i = players.begin(); i != players.end(); i++) {
-            ntPlayer *netPlayer = (*i).first;
-            phAvatarController *netAvCtrl = (*i).second;
-            if(netPlayer->getWalking() != phAvatarController::kNoWalk) {
+        std::map<uint32_t, phAvatarController*>::iterator i;
+        for(i = ntPlayers.begin(); i != ntPlayers.end(); i++) {
+            uint32_t netId = i->first;
+            phAvatarController *netAvCtrl = i->second;
+            if(netAvCtrl->getWalkingFlag() != phAvatarController::kNoWalk) {
                 float speed = kWalkSpeed;
-                if(netPlayer->getWalking() & phAvatarController::kRun)
+                if(netAvCtrl->getWalkingFlag() & phAvatarController::kRun)
                     speed = kRunSpeed;
                 netAvCtrl->move(speed * evt.timeSinceLastFrame, netAvCtrl->getWalkingDirection());
             }
-            /*if(netPlayer->getTurning() != phAvatarController::kNoTurn)
+            /*if(netAvCtrl->getTurningFlag() != phAvatarController::kNoTurn)
                 netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);*/
         }
     }
@@ -395,31 +390,6 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     phBullet::getInstance().getDbgDrawer()->step();
 
     return true;
-}
-
-void crClient::getPlayerData(uint32_t clientID, ntPlayer *&player, phAvatarController *&ctrl) {
-    uint32_t idx = 0;
-    std::map<ntPlayer*, phAvatarController*>::iterator i;
-    for(i = players.begin(); i != players.end(); i++) {
-        if((*i).first->getClientID() == clientID) {
-            player = (*i).first;
-            ctrl = (*i).second;
-            break;
-        }
-    }
-}
-
-void crClient::updatePlayer(ntPlayer *player) {
-    phAvatarController *ctrl;
-    std::map<ntPlayer*, phAvatarController*>::iterator i;
-    for(i = players.begin(); i != players.end(); i++) {
-        if((*i).first->getClientID() == player->getClientID()) {
-            ctrl = (*i).second;
-            players.erase(i);
-            break;
-        }
-    }
-    players[player] = ctrl;
 }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
