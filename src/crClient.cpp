@@ -366,6 +366,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             phAvatar->getTurningFlag() != myPlayer->getTurning()) {
             myPlayer->setWalking(phAvatar->getWalkingFlag());
             myPlayer->setTurning(phAvatar->getTurningFlag());
+            myPlayer->setPosition(phAvatar->getPosition());
             ntMgr->sendPlayerMsg(myPlayer);
         }
 
