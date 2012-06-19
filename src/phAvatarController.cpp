@@ -31,20 +31,22 @@ phAvatarController::~phAvatarController() {
 }
 
 void phAvatarController::move(float walkSpeed, Vector3 direction) {
-    fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
+    //fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
+    fBody->applyCentralImpulse(walkSpeed * BtOgre::Convert::toBullet(direction));
 }
 
 void phAvatarController::move(float walkSpeed, Vector3 direction, float yaw) {
-    fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
+    //fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
+    fBody->applyCentralImpulse(walkSpeed * BtOgre::Convert::toBullet(direction));
     setYaw(yaw);
 }
 
 void phAvatarController::jump() {
     if(!avatarOnGround())
         return;
-    //btScalar magnitude = (1 / fBody->getInvMass()) * 16;
-    //fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
-    fBody->setLinearVelocity(30 * btVector3(0, 1, 0));
+    btScalar magnitude = (1 / fBody->getInvMass() * 3);
+    fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
+    //fBody->setLinearVelocity(30 * btVector3(0, 1, 0));
 }
 
 bool phAvatarController::avatarOnGround() {

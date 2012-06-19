@@ -23,8 +23,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "crClient.h"
 #include "shared/ntMessage.h"
 
-#define kWalkSpeed 100
-#define kRunSpeed 200
+#define kWalkSpeed 2
+#define kRunSpeed 4
 
 enum GameMessages {
     NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
@@ -245,15 +245,18 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     }
 
     Vector3 avWalkDir;
+    phAvatar->setWalkingFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight, kShiftDown);
     if(avFly) {
-        phAvatar->setWalkingFlag(false, false, false, false);
         avWalkDir = phAvatar->getFlymodeDirection(mCamera->getDirection());
         if(avWalk || avWalkBack || avWalkLeft || avWalkRight)
-            mCamera->move(avWalkSpeed/10 * avWalkDir * evt.timeSinceLastFrame);
+            mCamera->move(avWalkSpeed * avWalkDir * evt.timeSinceLastFrame);
+        //do not send this
+        phAvatar->setWalkingFlag(false, false, false, false, false);
     } else {
-        phAvatar->setWalkingFlag(avWalk, avWalkBack, avWalkLeft, avWalkRight, kShiftDown);
-        avWalkDir = phAvatar->getWalkingDirection();
-        phAvatar->move(avWalkSpeed * evt.timeSinceLastFrame, avWalkDir, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
+        if(phAvatar->getWalkingFlag() != phAvatarController::kNoWalk) {
+            avWalkDir = phAvatar->getWalkingDirection();
+            phAvatar->move(avWalkSpeed, avWalkDir, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
+        }
         Vector3 avCamPos = phAvatar->getPosition() + Vector3(0, 0.7f, 0);
         mCamera->setPosition(avCamPos);
     }
@@ -367,6 +370,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             myPlayer->setWalking(phAvatar->getWalkingFlag());
             myPlayer->setTurning(phAvatar->getTurningFlag());
             myPlayer->setPosition(phAvatar->getPosition());
+            myPlayer->setYaw(phAvatar->getYaw());
             ntMgr->sendPlayerMsg(myPlayer);
         }
 

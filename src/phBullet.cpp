@@ -31,7 +31,7 @@ phBullet::phBullet() {
     btDispatcher = new btCollisionDispatcher(btCollisionConfig);
     btSolver = new btSequentialImpulseConstraintSolver();
     btWorld = new btDiscreteDynamicsWorld(btDispatcher, btBroadphase, btSolver, btCollisionConfig);
-    btWorld->setGravity(btVector3(0, -40.0f, 0));
+    btWorld->setGravity(btVector3(0, -9.81f, 0));
 }
 
 phBullet::~phBullet() {
