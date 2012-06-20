@@ -44,7 +44,9 @@ void phAvatarController::move(float walkSpeed, Vector3 direction, float yaw) {
 void phAvatarController::jump() {
     if(!avatarOnGround())
         return;
-    btScalar magnitude = (1 / fBody->getInvMass() * 3);
+    //btScalar magnitude = (1 / fBody->getInvMass());
+    float jumpHeight = 0.7f;
+    btScalar magnitude = (1 / fBody->getInvMass()) * sqrt(2.f * 9.81f * jumpHeight);
     fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
     //fBody->setLinearVelocity(30 * btVector3(0, 1, 0));
 }
