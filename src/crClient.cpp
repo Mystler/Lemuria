@@ -292,6 +292,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     LogManager::getSingletonPtr()->logMessage("MULTI: Spawn " + StringConverter::toString(pos.x) + ", " +
                             StringConverter::toString(pos.y) + ", " + StringConverter::toString(pos.z));
                     phAvatar->setPosition(myPlayer->getPosition());
+                    phAvatar->setYaw(myPlayer->getYaw());
                     ntMgr->setMyClientID(inMsg->getClientID());
                     ntMgr->sendPlNameMsg(ntPlayerName);
                     break;
@@ -329,10 +330,11 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ndPlayer = mSceneMgr->getRootSceneNode()->createChildSceneNode(playerNode);
                     ndPlayer->attachObject(entPlayer);
                     ndPlayer->scale(Vector3(0.035f, 0.035f, 0.035f));
-                    ndPlayer->setDirection(Vector3::UNIT_X);
+                    //ndPlayer->setDirection(Vector3::UNIT_X);
                     playerCtrl = new phAvatarController(phBullet::getInstance().createPhysicalAvatar(ndPlayer));
                     playerCtrl->getFlagsFromPlayer(player);
                     playerCtrl->setPosition(player->getPosition());
+                    playerCtrl->setYaw(player->getYaw());
                     ntPlayers[ntNetClientID] = playerCtrl;
                     break;
                 case DISCONNECT_PLAYER:
@@ -383,10 +385,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                 float speed = kWalkSpeed;
                 if(netAvCtrl->getWalkingFlag() & phAvatarController::kRun)
                     speed = kRunSpeed;
-                netAvCtrl->move(speed * evt.timeSinceLastFrame, netAvCtrl->getWalkingDirection());
+                netAvCtrl->move(speed, netAvCtrl->getWalkingDirection());
             }
-            /*if(netAvCtrl->getTurningFlag() != phAvatarController::kNoTurn)
-                netAvCtrl->setYaw(netPlayer->getYaw() + netPlayer->getTurning() + Math::PI);*/
+            if(netAvCtrl->getTurningFlag() != phAvatarController::kNoTurn)
+                netAvCtrl->rotate(netAvCtrl->getTurningFlag());
         }
     }
 

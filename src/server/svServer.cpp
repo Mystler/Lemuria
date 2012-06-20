@@ -95,7 +95,7 @@ void svServer::receive() {
                 case ID_NEW_INCOMING_CONNECTION: {
                     printf("New connection incoming.\n");
                     client_id = (int)clients.size();
-                    ntPlayer *newPlayer = new ntPlayer(client_id, SPAWNPOS, 3.14f);
+                    ntPlayer *newPlayer = new ntPlayer(client_id, SPAWNPOS, 1.57f);
                     if(clients.size() > 0) {
                         printf("Sending new spawn position to other clients\n");
                         out = new ntMessage(client_id, NEW_CLIENT);

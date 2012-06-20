@@ -50,6 +50,7 @@ public:
     //movement controls
     void move(float walkSpeed, Vector3 direction);
     void move(float walkSpeed, Vector3 direction, float yaw);
+    void rotate(uint32_t turningFlag);
     void jump();
     bool avatarOnGround();
 

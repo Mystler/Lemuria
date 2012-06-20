@@ -43,6 +43,13 @@ void phAvatarController::move(float walkSpeed, Vector3 direction, float yaw) {
     setYaw(yaw);
 }
 
+void phAvatarController::rotate(uint32_t turningFlag) {
+    if(turningFlag == kTurnLeft)
+        fBody->setAngularVelocity(btVector3(0,2.09f,0));
+    if(turningFlag == kTurnRight)
+        fBody->setAngularVelocity(btVector3(0,-2.09f,0));
+}
+
 void phAvatarController::jump() {
     if(!avatarOnGround())
         return;
