@@ -31,13 +31,15 @@ phAvatarController::~phAvatarController() {
 }
 
 void phAvatarController::move(float walkSpeed, Vector3 direction) {
-    //fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
-    fBody->applyCentralImpulse(walkSpeed * BtOgre::Convert::toBullet(direction));
+    if(!avatarOnGround())
+        return;
+    fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
 }
 
 void phAvatarController::move(float walkSpeed, Vector3 direction, float yaw) {
-    //fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
-    fBody->applyCentralImpulse(walkSpeed * BtOgre::Convert::toBullet(direction));
+    if(!avatarOnGround())
+        return;
+    fBody->setLinearVelocity(walkSpeed * BtOgre::Convert::toBullet(direction));
     setYaw(yaw);
 }
 
@@ -45,20 +47,19 @@ void phAvatarController::jump() {
     if(!avatarOnGround())
         return;
     //btScalar magnitude = (1 / fBody->getInvMass());
-    float jumpHeight = 0.7f;
+    float jumpHeight = 1.0f;
     btScalar magnitude = (1 / fBody->getInvMass()) * sqrt(2.f * 9.81f * jumpHeight);
     fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
-    //fBody->setLinearVelocity(30 * btVector3(0, 1, 0));
 }
 
 bool phAvatarController::avatarOnGround() {
-    btVector3 avPos = BtOgre::Convert::toBullet(getPosition());
-    btVector3 avToGround = avPos + btVector3(0, -1.1f, 0);
+    /*btVector3 avPos = BtOgre::Convert::toBullet(getPosition());
+    btVector3 avToGround = avPos + btVector3(0, -1.f, 0);
     btDynamicsWorld::ClosestRayResultCallback groundRay(avPos, avToGround);
     phBullet::getInstance().getWorld()->rayTest(avPos, avToGround, groundRay);
-    if(groundRay.hasHit()) {
+    if(groundRay.hasHit())*/
+    if(fBody->getLinearVelocity().y() >= -0.01f && fBody->getLinearVelocity().y() <= 0.01f)
         return true;
-    }
     return false;
 }
 

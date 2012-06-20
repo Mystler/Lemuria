@@ -391,7 +391,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     }
 
     //Do the magic physics simulation
-    phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame);
+    phBullet::getInstance().getWorld()->stepSimulation(evt.timeSinceLastFrame, 10);
     phBullet::getInstance().getDbgDrawer()->step();
 
     return true;
