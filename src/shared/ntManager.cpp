@@ -20,19 +20,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ntManager.h"
 
-#include <MessageIdentifiers.h>
-
 #include "ntMessage.h"
 #include "ntPlayer.h"
-
-enum GameMessages {
-    NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
-    SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
-    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
-    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
-    PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
-};
 
 ntManager::~ntManager() {
     RakPeerInterface::DestroyInstance(fPeer);

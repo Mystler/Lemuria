@@ -28,18 +28,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "../shared/ntMessage.h"
 #include "../shared/ntPlayer.h"
+#include "../shared/ntManager.h"
 
 #define MAX_CLIENTS 4
 #define SERVER_PORT 27015
-
-enum GameMessages {
-    NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
-    SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
-    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
-    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
-    PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
-};
 
 //helper struct
 struct Client {
@@ -99,7 +91,7 @@ void svServer::receive() {
                     ntPlayer *newPlayer = new ntPlayer(client_id, SPAWNPOS, 1.57f);
                     if(clients.size() > 0) {
                         printf("Sending new spawn position to other clients\n");
-                        out = new ntMessage(client_id, NEW_CLIENT);
+                        out = new ntMessage(client_id, ntManager::NEW_CLIENT);
                         out->writePlayer(newPlayer);
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline)
@@ -110,7 +102,7 @@ void svServer::receive() {
                         printf("Sending other clients position to new client\n");
                         for(size_t i = 0; i < clients.size(); i++) {
                             if(!clients[i].offline) {
-                                out = new ntMessage(i, NEW_CLIENT);
+                                out = new ntMessage(i, ntManager::NEW_CLIENT);
                                 out->writePlayer(clients[i].player);
                                 peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                             }
@@ -121,7 +113,7 @@ void svServer::receive() {
 
                     clients.push_back(Client(client_id, packet->guid, false, newPlayer));
 
-                    out = new ntMessage(client_id, SPAWN_POSITION);
+                    out = new ntMessage(client_id, ntManager::SPAWN_POSITION);
                     out->writePlayer(newPlayer);
                     peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
                     break;
@@ -135,7 +127,7 @@ void svServer::receive() {
                             client_name = clients[i].name;
                             clients[i].offline = true;
                             printf("Client %i (%s) disconnected.\n", client_id, client_name.C_String());
-                            out = new ntMessage(client_id, DISCONNECT_PLAYER);
+                            out = new ntMessage(client_id, ntManager::DISCONNECT_PLAYER);
                             for(size_t j = 0; j < clients.size(); ++j) {
                                 if(!clients[j].offline)
                                     peer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0,
@@ -145,12 +137,12 @@ void svServer::receive() {
                     }
                     break;
                 }
-                case PLAYER_UPDATE: {
+                case ntManager::PLAYER_UPDATE: {
                     ntPlayer *player = inMsg->readPlayer();
                     client_id = inMsg->getClientID();
                     //printf("Client %i sent new player\n", client_id);
                     clients[client_id].player = player;
-                    out = new ntMessage(client_id, PLAYER_UPDATE);
+                    out = new ntMessage(client_id, ntManager::PLAYER_UPDATE);
                     out->writePlayer(player);
                     for(size_t i = 0; i < clients.size(); i++) {
                         if(client_id != i && !clients[i].offline)
@@ -160,16 +152,16 @@ void svServer::receive() {
                     }
                     break;
                 }
-                case PLAYER_JUMP:
+                case ntManager::PLAYER_JUMP:
                     //printf("A Client send a Jump Message\n");
-                    out = new ntMessage(inMsg->getClientID(), PLAYER_JUMP);
+                    out = new ntMessage(inMsg->getClientID(), ntManager::PLAYER_JUMP);
                     for(size_t i = 0; i < clients.size(); i++) {
                         if(client_id != i && !clients[i].offline)
                             peer->Send(out->getStream(), MEDIUM_PRIORITY, RELIABLE_ORDERED, 0,
                                 peer->GetSystemAddressFromGuid(clients[i].guid), false);
                     }
                     break;
-                case PLAYERNAME:
+                case ntManager::PLAYERNAME:
                     client_id = inMsg->getClientID();
                     client_name = inMsg->readString();
                     clients[client_id].name = client_name;

@@ -26,15 +26,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #define kWalkSpeed 2
 #define kRunSpeed 4
 
-enum GameMessages {
-    NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
-    SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
-    PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
-    PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
-    PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
-};
-
 crClient::crClient()
     : mRoot(0),
       mWindow(0),
@@ -288,7 +279,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
             inMsg = ntMgr->getMessage(ntPacket);
 
             switch(inMsg->getFlag()) {
-                case SPAWN_POSITION:
+                case ntManager::SPAWN_POSITION:
                     //get position and spawn
                     myPlayer = inMsg->readPlayer();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Got client number " + StringConverter::toString(myPlayer->getClientID()));
@@ -303,7 +294,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     ntConnected = true;
                     LogManager::getSingletonPtr()->logMessage("MULTI: Server accepted connection");
                     break;
-                case PLAYER_UPDATE:
+                case ntManager::PLAYER_UPDATE:
                     ntNetClientID = inMsg->getClientID();
                     player = inMsg->readPlayer();
                     playerNode = "ndPlayer";
@@ -318,7 +309,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
                     break;
-                case PLAYER_JUMP:
+                case ntManager::PLAYER_JUMP:
                     ntNetClientID = inMsg->getClientID();
                     playerNode = "ndPlayer";
                     playerNr << ntNetClientID;
@@ -330,7 +321,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }
                     break;
-                case NEW_CLIENT:
+                case ntManager::NEW_CLIENT:
                     ntNetClientID = inMsg->getClientID();
                     player = inMsg->readPlayer();
                     LogManager::getSingletonPtr()->logMessage("MULTI: New Client " +
@@ -352,7 +343,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     playerCtrl->setYaw(player->getYaw());
                     ntPlayers[ntNetClientID] = playerCtrl;
                     break;
-                case DISCONNECT_PLAYER:
+                case ntManager::DISCONNECT_PLAYER:
                     ntNetClientID = inMsg->getClientID();
                     LogManager::getSingletonPtr()->logMessage("MULTI: Client " +
                             StringConverter::toString(ntNetClientID) + "disconnected");

@@ -24,6 +24,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include <RakPeerInterface.h>
 #include <RakNetTypes.h>
 #include <RakString.h>
+#include <MessageIdentifiers.h>
 
 using namespace RakNet;
 
@@ -39,6 +40,15 @@ public:
     void sendPlNameMsg(RakString name);
     void sendPlayerMsg(ntPlayer *player);
     void sendJumpMsg();
+
+    enum GameMessages {
+        NEW_CLIENT = ID_USER_PACKET_ENUM + 1,
+        SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
+        PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
+        PLAYERNAME = ID_USER_PACKET_ENUM + 4,
+        DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
+        PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
+    };
 private:
     RakPeerInterface *fPeer;
     SystemAddress fServerAddress;
