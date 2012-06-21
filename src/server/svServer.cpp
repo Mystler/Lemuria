@@ -154,11 +154,14 @@ void svServer::receive() {
                 }
                 case ntManager::PLAYER_JUMP:
                     //printf("A Client send a Jump Message\n");
-                    out = new ntMessage(inMsg->getClientID(), ntManager::PLAYER_JUMP);
+                    client_id = inMsg->getClientID();
+                    out = new ntMessage(client_id, ntManager::PLAYER_JUMP);
                     for(size_t i = 0; i < clients.size(); i++) {
-                        if(client_id != i && !clients[i].offline)
+                        if(client_id != i && !clients[i].offline) {
+                            printf("sending new player to %i\n", i);
                             peer->Send(out->getStream(), MEDIUM_PRIORITY, RELIABLE_ORDERED, 0,
                                 peer->GetSystemAddressFromGuid(clients[i].guid), false);
+                        }
                     }
                     break;
                 case ntManager::PLAYERNAME:

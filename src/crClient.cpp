@@ -217,6 +217,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     if(mWindow->isClosed())
         return false;
 
+    rotate = 0;
     mKeyboard->capture();
     mMouse->capture();
 
@@ -245,9 +246,10 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
         //do not send this
         phAvatar->setWalkingFlag(false, false, false, false, false);
     } else {
+        phAvatar->setYaw(mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
         if(phAvatar->getWalkingFlag() != phAvatarController::kNoWalk) {
             avWalkDir = phAvatar->getWalkingDirection();
-            phAvatar->move(avWalkSpeed, avWalkDir, mCamera->getOrientation().getYaw().valueRadians() + Math::PI);
+            phAvatar->move(avWalkSpeed, avWalkDir);
         }
         Vector3 avCamPos = phAvatar->getPosition() + Vector3(0, 0.7f, 0);
         mCamera->setPosition(avCamPos);
@@ -393,8 +395,7 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                     speed = kRunSpeed;
                 netAvCtrl->move(speed, netAvCtrl->getWalkingDirection());
             }
-            if(netAvCtrl->getTurningFlag() != phAvatarController::kNoTurn)
-                netAvCtrl->rotate(netAvCtrl->getTurningFlag());
+            netAvCtrl->rotate(netAvCtrl->getTurningFlag());
         }
     }
 

@@ -48,23 +48,19 @@ void phAvatarController::rotate(uint32_t turningFlag) {
         fBody->setAngularVelocity(btVector3(0,2.09f,0));
     if(turningFlag == kTurnRight)
         fBody->setAngularVelocity(btVector3(0,-2.09f,0));
+    if(turningFlag == kNoTurn)
+        fBody->setAngularVelocity(btVector3(0,0,0));
 }
 
 void phAvatarController::jump() {
     if(!avatarOnGround())
         return;
-    //btScalar magnitude = (1 / fBody->getInvMass());
     float jumpHeight = 1.0f;
     btScalar magnitude = (1 / fBody->getInvMass()) * sqrt(2.f * 9.81f * jumpHeight);
     fBody->applyCentralImpulse(btVector3(0, 1, 0) * magnitude);
 }
 
 bool phAvatarController::avatarOnGround() {
-    /*btVector3 avPos = BtOgre::Convert::toBullet(getPosition());
-    btVector3 avToGround = avPos + btVector3(0, -1.f, 0);
-    btDynamicsWorld::ClosestRayResultCallback groundRay(avPos, avToGround);
-    phBullet::getInstance().getWorld()->rayTest(avPos, avToGround, groundRay);
-    if(groundRay.hasHit())*/
     if(fBody->getLinearVelocity().y() >= -0.01f && fBody->getLinearVelocity().y() <= 0.01f)
         return true;
     return false;
