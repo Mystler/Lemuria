@@ -30,7 +30,8 @@ enum GameMessages {
     SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
     PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
     PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
+    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
+    PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
 };
 
 ntManager::~ntManager() {
@@ -56,7 +57,7 @@ ntMessage *ntManager::getMessage(Packet *packet) {
 void ntManager::sendPlNameMsg(RakString name) {
     ntMessage *out = new ntMessage(fMyClientID, PLAYERNAME);
     out->writeString(name);
-    fPeer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
+    fPeer->Send(out->getStream(), LOW_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
     delete out;
 }
 
@@ -65,4 +66,9 @@ void ntManager::sendPlayerMsg(ntPlayer *player) {
     out->writePlayer(player);
     fPeer->Send(out->getStream(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
     delete out;
+}
+
+void ntManager::sendJumpMsg() {
+    ntMessage *out = new ntMessage(fMyClientID, PLAYER_JUMP);
+    fPeer->Send(out->getStream(), MEDIUM_PRIORITY, RELIABLE_ORDERED, 0, fServerAddress, false);
 }

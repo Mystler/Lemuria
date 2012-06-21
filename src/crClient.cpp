@@ -31,7 +31,8 @@ enum GameMessages {
     SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
     PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
     PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
+    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
+    PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
 };
 
 crClient::crClient()
@@ -263,6 +264,8 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
 
     if(avJump) {
         phAvatar->jump();
+        if(ntMultiplayer)
+            ntMgr->sendJumpMsg();
         avJump = false;
     }
 
@@ -311,6 +314,18 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
                         playerCtrl->getFlagsFromPlayer(player);
                         playerCtrl->setPosition(player->getPosition());
                         playerCtrl->setYaw(player->getYaw());
+                    } else {
+                        LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
+                    }
+                    break;
+                case PLAYER_JUMP:
+                    ntNetClientID = inMsg->getClientID();
+                    playerNode = "ndPlayer";
+                    playerNr << ntNetClientID;
+                    playerNode.append(playerNr.str());
+                    if(mSceneMgr->hasSceneNode(playerNode)) {
+                        playerCtrl = ntPlayers[ntNetClientID];
+                        playerCtrl->jump();
                     } else {
                         LogManager::getSingletonPtr()->logMessage("MULTI: Player node " + playerNode + " not found");
                     }

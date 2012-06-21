@@ -37,7 +37,8 @@ enum GameMessages {
     SPAWN_POSITION = ID_USER_PACKET_ENUM + 2,
     PLAYER_UPDATE = ID_USER_PACKET_ENUM + 3,
     PLAYERNAME = ID_USER_PACKET_ENUM + 4,
-    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5
+    DISCONNECT_PLAYER = ID_USER_PACKET_ENUM + 5,
+    PLAYER_JUMP = ID_USER_PACKET_ENUM + 6
 };
 
 //helper struct
@@ -159,6 +160,15 @@ void svServer::receive() {
                     }
                     break;
                 }
+                case PLAYER_JUMP:
+                    //printf("A Client send a Jump Message\n");
+                    out = new ntMessage(inMsg->getClientID(), PLAYER_JUMP);
+                    for(size_t i = 0; i < clients.size(); i++) {
+                        if(client_id != i && !clients[i].offline)
+                            peer->Send(out->getStream(), MEDIUM_PRIORITY, RELIABLE_ORDERED, 0,
+                                peer->GetSystemAddressFromGuid(clients[i].guid), false);
+                    }
+                    break;
                 case PLAYERNAME:
                     client_id = inMsg->getClientID();
                     client_name = inMsg->readString();

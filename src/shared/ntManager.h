@@ -38,6 +38,7 @@ public:
     void setMyClientID(uint32_t id) { fMyClientID = id; }
     void sendPlNameMsg(RakString name);
     void sendPlayerMsg(ntPlayer *player);
+    void sendJumpMsg();
 private:
     RakPeerInterface *fPeer;
     SystemAddress fServerAddress;
