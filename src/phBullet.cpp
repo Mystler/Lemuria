@@ -20,6 +20,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 #include "phBullet.h"
 
+#include "3rdparty/btogre/BtOgreGP.h"
+#include "3rdparty/btogre/BtOgrePG.h"
+
 phBullet::phBullet() {
     //init Physics World
     btBroadphase = new btAxisSweep3(btVector3(-10000, -10000, -10000),
@@ -28,7 +31,7 @@ phBullet::phBullet() {
     btDispatcher = new btCollisionDispatcher(btCollisionConfig);
     btSolver = new btSequentialImpulseConstraintSolver();
     btWorld = new btDiscreteDynamicsWorld(btDispatcher, btBroadphase, btSolver, btCollisionConfig);
-    btWorld->setGravity(btVector3(0, -40.0f, 0));
+    btWorld->setGravity(btVector3(0, -9.81f, 0));
 }
 
 phBullet::~phBullet() {

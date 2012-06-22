@@ -22,43 +22,45 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _ntMessage_h
 #define _ntMessage_h
 
-#include <OgreVector3.h>
+#include <BitStream.h>
 
-#include "MessageIdentifiers.h"
-#include "RakPeerInterface.h"
-#include "RakNetTypes.h"
-#include "BitStream.h"
+#include "ntPlayer.h"
 
-#include "crPlayer.h"
+namespace RakNet {
+    class RakString;
+    struct Packet;
+};
 
 using namespace Ogre;
 using namespace RakNet;
 
 class ntMessage {
 public:
-    BitStream streamOut;
-
     //ctor
-    ntMessage(uint32_t clientID);
-    ntMessage(Packet *packet);
+    ntMessage(uint32_t senderID, uint32_t msgFlag); //outgoing
+    ntMessage(Packet *packet); //incoming
     //dtor
     ~ntMessage();
 
+    BitStream *getStream() { return &fStreamOut; }
     uint32_t getClientID() { return fClientID; }
-    uint32_t getFlag() { return ntFlag; }
+    uint32_t getFlag() { return fFlag; }
     void setFlag(uint32_t flag);
 
     //read
     Vector3 readVector();
-    crPlayer *readPlayer();
+    RakString readString();
+    ntPlayer *readPlayer();
 
     //write
-    void writePlayerName(RakString name);
-    void writePlayer(crPlayer *player);
+    void writeVector(Vector3 vector);
+    void writeVector(float x, float y, float z);
+    void writeString(RakString string);
+    void writePlayer(ntPlayer *player);
 private:
-    BitStream streamIn;
+    BitStream fStreamIn, fStreamOut;
     uint32_t fClientID;
-    MessageID ntFlag;
-    Packet *ntPacket;
+    MessageID fFlag;
+    Packet *fPacket;
 };
 #endif
