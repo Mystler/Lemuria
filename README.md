@@ -14,6 +14,7 @@ Dependencies
 * Crazy Eddie's GUI System - http://www.cegui.org.uk/wiki/index.php/Main_Page
 * Bullet Physics - http://bulletphysics.org/wordpress/
 * RakNet Multiplayer Engine - http://www.jenkinssoftware.com/
+* OpenAL 1.1 - http://connect.creativelabs.com/openal/default.aspx
 * OgreOggSound - http://sourceforge.net/projects/ogreoggsound/
 
 These dependencies may require additional libraries.
