@@ -40,13 +40,15 @@ bool crClient::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
         case OIS::MB_Left:
             break;
         case OIS::MB_Right:
-            if(avMouseLook) {
-                CEGUI::MouseCursor::getSingleton().show();
-                CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(arg.state.width / 2, arg.state.height / 2));
-                avMouseLook = false;
-            } else {
-                CEGUI::MouseCursor::getSingleton().hide();
-                avMouseLook = true;
+            if(!fMMActive) {
+                if(avMouseLook) {
+                    CEGUI::MouseCursor::getSingleton().show();
+                    CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(arg.state.width / 2, arg.state.height / 2));
+                    avMouseLook = false;
+                } else {
+                    CEGUI::MouseCursor::getSingleton().hide();
+                    avMouseLook = true;
+                }
             }
             break;
         default:

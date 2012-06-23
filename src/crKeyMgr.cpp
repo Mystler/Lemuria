@@ -70,10 +70,12 @@ bool crClient::keyPressed(const OIS::KeyEvent &arg) {
                 CEGUI::MouseCursor::getSingleton().show();
                 CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(0, 0));
                 fMMActive = true;
+                avMouseLook = false;
             } else {
                 CEGUI::MouseCursor::getSingleton().hide();
                 fMMRoot->setVisible(false);
                 fMMActive = false;
+                avMouseLook = true;
             }
             break;
         default:

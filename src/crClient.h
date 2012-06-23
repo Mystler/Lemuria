@@ -41,6 +41,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
+#include <CEGUI.h>
 #include <CEGUISystem.h>
 #include <CEGUIWindow.h>
 #include <CEGUIWindowManager.h>

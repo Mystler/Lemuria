@@ -155,10 +155,10 @@ bool crClient::init(void) {
     Scene01();
 
     //setup Main Menu GUI
-    fMMRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("test.layout");
+    fMMRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("MainMenu.layout");
     CEGUI::System::getSingleton().setGUISheet( fMMRoot );
     fMMRoot->setVisible(false);
-    fBtnExit = fMMRoot->getChild("Root/Background/btnExit");
+    fBtnExit = fMMRoot->getChildRecursive("Root/Background/btnExit");
     fBtnExit->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&crClient::captureQuit,this));
     fMMActive = false;
     fShutDown = false;
