@@ -154,6 +154,15 @@ bool crClient::init(void) {
     //let there be light
     Scene01();
 
+    //setup Main Menu GUI
+    fMMRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("test.layout");
+    CEGUI::System::getSingleton().setGUISheet( fMMRoot );
+    fMMRoot->setVisible(false);
+    fBtnExit = fMMRoot->getChild("Root/Background/btnExit");
+    fBtnExit->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&crClient::captureQuit,this));
+    fMMActive = false;
+    fShutDown = false;
+
     //add the Frame Listener
     mRoot->addFrameListener(this);
 
@@ -217,15 +226,12 @@ bool crClient::frameRenderingQueued(const FrameEvent &evt) {
     if(mWindow->isClosed())
         return false;
 
+    if(fShutDown == true)
+        return false;
+
     rotate = 0;
     mKeyboard->capture();
     mMouse->capture();
-
-    if(mKeyboard->isKeyDown(OIS::KC_ESCAPE)) {
-        if(ntMultiplayer)
-            ntPeer->CloseConnection(ntServerAddress, true);
-        return false;
-    }
 
     //Update OgreMax scene
     scMgr.Update(evt.timeSinceLastFrame);

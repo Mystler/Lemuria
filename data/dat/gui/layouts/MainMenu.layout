@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+    <Window Type="DefaultWindow" Name="Root" >
+        <Property Name="UnifiedAreaRect" Value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Window Type="Vanilla/StaticImage" Name="Root/Background" >
+            <Property Name="UnifiedAreaRect" Value="{{0.35,0},{0.2,0},{0.65,0},{0.8,0}}" />
+            <Window Type="Vanilla/StaticText" Name="Root/Background/Titel" >
+                <Property Name="Text" Value="Main Menu" />
+                <Property Name="HorzExtent" Value="95" />
+                <Property Name="VertExtent" Value="19.8618" />
+                <Property Name="HorzFormatting" Value="HorzCentred" />
+                <Property Name="UnifiedAreaRect" Value="{{0.1,0},{0.03,0},{0.9,0},{0.13,0}}" />
+            </Window>
+            <Window Type="Vanilla/Button" Name="Root/Background/btnExit" >
+                <Property Name="Text" Value="Exit" />
+                <Property Name="UnifiedAreaRect" Value="{{0.22513,0},{0.206684,0},{0.78112,0},{0.300434,0}}" />
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>

@@ -64,6 +64,18 @@ bool crClient::keyPressed(const OIS::KeyEvent &arg) {
             } else {
                 avFly = true;
             }
+        case OIS::KC_ESCAPE:
+            if(!fMMActive) {
+                fMMRoot->setVisible(true);
+                CEGUI::MouseCursor::getSingleton().show();
+                CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(0, 0));
+                fMMActive = true;
+            } else {
+                CEGUI::MouseCursor::getSingleton().hide();
+                fMMRoot->setVisible(false);
+                fMMActive = false;
+            }
+            break;
         default:
             break;
     }

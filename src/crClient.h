@@ -76,6 +76,10 @@ public:
     bool ntMultiplayer;
     String ntServerIP;
     RakString ntPlayerName;
+    bool captureQuit(const CEGUI::EventArgs& e) {
+        fShutDown = true;
+        return true;
+    }
 private:
     crClient();
     ~crClient();
@@ -97,6 +101,10 @@ private:
     bool btWireframe;
     //GUI
     CEGUI::Renderer *mGUIRenderer;
+    CEGUI::Window *fMMRoot;
+    CEGUI::Window *fBtnExit;
+    bool fMMActive;
+    bool fShutDown;
     //Sound
     OgreOggSound::OgreOggSoundManager *mSoundManager;
     //OIS Input
