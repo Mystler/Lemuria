@@ -41,14 +41,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
-#include <CEGUI.h>
-#include <CEGUISystem.h>
-#include <CEGUIWindow.h>
-#include <CEGUIWindowManager.h>
-#include <CEGUISchemeManager.h>
-#include <CEGUIFontManager.h>
-#include <RendererModules/Ogre/CEGUIOgreRenderer.h>
-
 #include <OgreOggSound.h>
 
 #include <map>
@@ -66,6 +58,9 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "scObjectMgr.h"
 #include "3rdparty/ogremax/OgreMaxScene.hpp"
 
+//Forward
+class crGUIManager;
+
 using namespace Ogre;
 using namespace RakNet;
 
@@ -77,10 +72,7 @@ public:
     bool ntMultiplayer;
     String ntServerIP;
     RakString ntPlayerName;
-    bool captureQuit(const CEGUI::EventArgs& e) {
-        fShutDown = true;
-        return true;
-    }
+    void requestShutDown() { fShutDown = true; }
 private:
     crClient();
     ~crClient();
@@ -101,10 +93,7 @@ private:
     SceneManager *mSceneMgr;
     bool btWireframe;
     //GUI
-    CEGUI::Renderer *mGUIRenderer;
-    CEGUI::Window *fMMRoot;
-    CEGUI::Window *fBtnExit;
-    bool fMMActive;
+    crGUIManager *guiMgr;
     bool fShutDown;
     //Sound
     OgreOggSound::OgreOggSoundManager *mSoundManager;

@@ -19,11 +19,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 *==LICENSE==*/
 
 #include "crClient.h"
+#include "crGUIManager.h"
 
 bool crClient::keyPressed(const OIS::KeyEvent &arg) {
-    CEGUI::System::getSingleton().injectKeyDown(arg.key);
-    CEGUI::System::getSingleton().injectChar(arg.text);
-
+    guiMgr->convertKey(arg.key, arg.text);
     switch(arg.key) {
         case OIS::KC_P:
             if(!btWireframe) {
@@ -65,18 +64,7 @@ bool crClient::keyPressed(const OIS::KeyEvent &arg) {
                 avFly = true;
             }
         case OIS::KC_ESCAPE:
-            if(!fMMActive) {
-                fMMRoot->setVisible(true);
-                CEGUI::MouseCursor::getSingleton().show();
-                CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(0, 0));
-                fMMActive = true;
-                avMouseLook = false;
-            } else {
-                CEGUI::MouseCursor::getSingleton().hide();
-                fMMRoot->setVisible(false);
-                fMMActive = false;
-                avMouseLook = true;
-            }
+            avMouseLook = guiMgr->toggleEscapeMenu();
             break;
         default:
             break;
@@ -85,7 +73,7 @@ bool crClient::keyPressed(const OIS::KeyEvent &arg) {
     return true;
 }
 bool crClient::keyReleased(const OIS::KeyEvent &arg) {
-    CEGUI::System::getSingleton().injectKeyUp(arg.key);
+    guiMgr->convertKey(arg.key);
 
     switch(arg.key) {
         case OIS::KC_LSHIFT:

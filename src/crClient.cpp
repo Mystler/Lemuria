@@ -21,6 +21,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
     TODO: replace networking stuff with ntNetMgr
 */
 #include "crClient.h"
+#include "crGUIManager.h"
 #include "shared/ntMessage.h"
 
 #define kWalkSpeed 2
@@ -30,8 +31,7 @@ crClient::crClient()
     : mRoot(0),
       mWindow(0),
       mSceneMgr(0),
-      mCamera(0),
-      mGUIRenderer(0) {
+      mCamera(0) {
 }
 
 crClient::~crClient() {
@@ -137,15 +137,7 @@ bool crClient::init(void) {
     avRotateSpeed = 0.1f;
 
     //CEGUI setup
-    mGUIRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-
-    //configure CEGUI
-    CEGUI::SchemeManager::getSingleton().create((CEGUI::utf8 *)"VanillaSkin.scheme");
-    CEGUI::System::getSingleton().setDefaultMouseCursor("Vanilla-Images", "MouseArrow");
-    CEGUI::MouseCursor::getSingleton().setImage("Vanilla-Images", "MouseArrow");
-    CEGUI::MouseCursor::getSingleton().hide();
-    CEGUI::FontManager::getSingleton().create("DejaVuSans-10.font");
-    CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
+    guiMgr = new crGUIManager();
 
     //init OgreOggSound
     //mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
@@ -154,13 +146,6 @@ bool crClient::init(void) {
     //let there be light
     Scene01();
 
-    //setup Main Menu GUI
-    fMMRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("MainMenu.layout");
-    CEGUI::System::getSingleton().setGUISheet( fMMRoot );
-    fMMRoot->setVisible(false);
-    fBtnExit = fMMRoot->getChildRecursive("Root/Background/btnExit");
-    fBtnExit->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&crClient::captureQuit,this));
-    fMMActive = false;
     fShutDown = false;
 
     //add the Frame Listener

@@ -18,7 +18,10 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
+#include <CEGUISystem.h>
+
 #include "crClient.h"
+#include "crGUIManager.h"
 
 //function to convert OIS to CEGUI Mouse Button
 CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID) {
@@ -40,16 +43,7 @@ bool crClient::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
         case OIS::MB_Left:
             break;
         case OIS::MB_Right:
-            if(!fMMActive) {
-                if(avMouseLook) {
-                    CEGUI::MouseCursor::getSingleton().show();
-                    CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(arg.state.width / 2, arg.state.height / 2));
-                    avMouseLook = false;
-                } else {
-                    CEGUI::MouseCursor::getSingleton().hide();
-                    avMouseLook = true;
-                }
-            }
+            avMouseLook = guiMgr->toggleMouseCursor(arg, avMouseLook);
             break;
         default:
             break;

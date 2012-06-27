@@ -3,6 +3,7 @@ add_subdirectory(shared)
 
 set(CLIENT_HEADERS
     crClient.h
+    crGUIManager.h
     phAvatarController.h
     phBullet.h
     scObjectMgr.h
@@ -12,6 +13,7 @@ set(CLIENT_SOURCES
     crClient.cpp
     crKeyMgr.cpp
     crMouseMgr.cpp
+    crGUIManager.cpp
     phAvatarController.cpp
     phBullet.cpp
     scObjectMgr.cpp
