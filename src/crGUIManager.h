@@ -25,6 +25,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 namespace OIS {
     class KeyEvent;
     class MouseEvent;
+    enum KeyCode;
 }
 
 namespace CEGUI {
@@ -42,8 +43,8 @@ public:
     bool captureQuit(const CEGUI::EventArgs& e);
     bool toggleEscapeMenu(); //returns avMouseLook
     bool toggleMouseCursor(const OIS::MouseEvent arg, bool avMouseLook); //returns avMouseLook
-    void convertKey(unsigned int upKeycode); //key released
-    void convertKey(unsigned int downKeycode, uint32 keyChar); //key pressed
+    void convertKey(const OIS::KeyCode upKeycode); //key released
+    void convertKey(const OIS::KeyCode downKeycode, unsigned int keyChar); //key pressed
 private:
     CEGUI::Renderer *fGUIRenderer;
     CEGUI::Window *fEscRoot;

@@ -18,11 +18,16 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 *==LICENSE==*/
 
+#include <CEGUISystem.h>
+
 #include "crClient.h"
 #include "crGUIManager.h"
 
 bool crClient::keyPressed(const OIS::KeyEvent &arg) {
-    guiMgr->convertKey(arg.key, arg.text);
+    //guiMgr->convertKey(arg.key, arg.text);
+    CEGUI::System::getSingleton().injectKeyDown(arg.key);
+    CEGUI::System::getSingleton().injectChar(arg.text);
+
     switch(arg.key) {
         case OIS::KC_P:
             if(!btWireframe) {
@@ -73,7 +78,8 @@ bool crClient::keyPressed(const OIS::KeyEvent &arg) {
     return true;
 }
 bool crClient::keyReleased(const OIS::KeyEvent &arg) {
-    guiMgr->convertKey(arg.key);
+    //guiMgr->convertKey(arg.key);
+    CEGUI::System::getSingleton().injectKeyUp(arg.key);
 
     switch(arg.key) {
         case OIS::KC_LSHIFT:

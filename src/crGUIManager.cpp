@@ -53,7 +53,7 @@ bool crGUIManager::captureQuit(const CEGUI::EventArgs& e) {
 }
 
 bool crGUIManager::toggleEscapeMenu() {
-    if(fEscActive) {
+    if(!fEscActive) {
         fEscRoot->setVisible(true);
         CEGUI::MouseCursor::getSingleton().show();
         CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(0, 0));
@@ -81,11 +81,11 @@ bool crGUIManager::toggleMouseCursor(const OIS::MouseEvent arg, bool avMouseLook
     return true;
 }
 
-void convertKey(CEGUI::uint upKeycode) {
+void convertKey(const OIS::KeyCode upKeycode) {
     CEGUI::System::getSingleton().injectKeyUp(upKeycode);
 }
 
-void convertKey(CEGUI::uint downKeycode, CEGUI::utf32 keyChar) {
+void convertKey(const OIS::KeyCode downKeycode, unsigned int keyChar) {
     CEGUI::System::getSingleton().injectKeyDown(downKeycode);
     CEGUI::System::getSingleton().injectChar(keyChar);
 }
