@@ -72,7 +72,9 @@ public:
     bool ntMultiplayer;
     String ntServerIP;
     RakString ntPlayerName;
-    void requestShutDown() { fShutDown = true; }
+    void shutdown() { fShutDown = true; }
+    int getWindowHeight() { return mWindow->getHeight(); }
+    int getWindowWidth() { return mWindow->getWidth(); }
 private:
     crClient();
     ~crClient();

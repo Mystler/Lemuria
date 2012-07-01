@@ -22,12 +22,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #define _crGUIManager_h
 
 //Forward
-namespace OIS {
-    class KeyEvent;
-    class MouseEvent;
-    enum KeyCode;
-}
-
 namespace CEGUI {
     class Renderer;
     class Window;
@@ -40,15 +34,17 @@ public:
     crGUIManager();
 
     //functions
+    void setup();
     bool captureQuit(const CEGUI::EventArgs& e);
     bool toggleEscapeMenu(); //returns avMouseLook
-    bool toggleMouseCursor(const OIS::MouseEvent arg, bool avMouseLook); //returns avMouseLook
-    void convertKey(const OIS::KeyCode upKeycode); //key released
-    void convertKey(const OIS::KeyCode downKeycode, unsigned int keyChar); //key pressed
+    bool toggleMouseCursor(); //returns avMouseLook
 private:
     CEGUI::Renderer *fGUIRenderer;
     CEGUI::Window *fEscRoot;
     CEGUI::Window *fEscBtnExit;
     bool fEscActive;
+    bool fMouseLook;
+    int fWidth;
+    int fHeight;
 };
 #endif

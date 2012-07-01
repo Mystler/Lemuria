@@ -22,12 +22,15 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include <CEGUISystem.h>
 #include <RendererModules/Ogre/CEGUIOgreRenderer.h>
 
-#include <OISEvents.h>
-
 #include "crClient.h"
 #include "crGUIManager.h"
 
-crGUIManager::crGUIManager() {
+crGUIManager::crGUIManager()
+: fEscActive(false),
+  fMouseLook(true) {
+}
+
+void crGUIManager::setup() {
     //setup
     fGUIRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     //configuration
@@ -44,48 +47,46 @@ crGUIManager::crGUIManager() {
     fEscRoot->setVisible(false);
     fEscBtnExit = fEscRoot->getChildRecursive("Root/Background/btnExit");
     fEscBtnExit->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&crGUIManager::captureQuit,this));
-    fEscActive = false;
+    //get resolution from Window
+    fHeight = crClient::getInstance().getWindowHeight();
+    fWidth  = crClient::getInstance().getWindowWidth();
 }
 
 bool crGUIManager::captureQuit(const CEGUI::EventArgs& e) {
-    crClient::getInstance().requestShutDown();
+    crClient::getInstance().shutdown();
     return true;
 }
 
 bool crGUIManager::toggleEscapeMenu() {
     if(!fEscActive) {
         fEscRoot->setVisible(true);
-        CEGUI::MouseCursor::getSingleton().show();
-        CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(0, 0));
+        if(fMouseLook) {
+            CEGUI::MouseCursor::getSingleton().show();
+            CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(fWidth / 2, fHeight / 2));
+        }
         fEscActive = true;
         return false;
     } else {
-        CEGUI::MouseCursor::getSingleton().hide();
         fEscRoot->setVisible(false);
         fEscActive = false;
-        return true;
-    }
-}
-
-bool crGUIManager::toggleMouseCursor(const OIS::MouseEvent arg, bool avMouseLook) {
-    if(!fEscActive) {
-        if(avMouseLook) {
-            CEGUI::MouseCursor::getSingleton().show();
-            CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(arg.state.width / 2, arg.state.height / 2));
-            return false;
-        } else {
+        if(fMouseLook) {
             CEGUI::MouseCursor::getSingleton().hide();
             return true;
         }
+        return false;
     }
-    return true;
 }
 
-void convertKey(const OIS::KeyCode upKeycode) {
-    CEGUI::System::getSingleton().injectKeyUp(upKeycode);
-}
-
-void convertKey(const OIS::KeyCode downKeycode, unsigned int keyChar) {
-    CEGUI::System::getSingleton().injectKeyDown(downKeycode);
-    CEGUI::System::getSingleton().injectChar(keyChar);
+bool crGUIManager::toggleMouseCursor() {
+    if(!fEscActive) {
+        if(fMouseLook) {
+            CEGUI::MouseCursor::getSingleton().show();
+            CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(fWidth / 2, fHeight / 2));
+            fMouseLook = false;
+        } else {
+            CEGUI::MouseCursor::getSingleton().hide();
+            fMouseLook = true;
+        }
+    }
+    return fMouseLook;
 }

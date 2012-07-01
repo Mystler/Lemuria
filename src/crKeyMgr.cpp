@@ -24,7 +24,6 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "crGUIManager.h"
 
 bool crClient::keyPressed(const OIS::KeyEvent &arg) {
-    //guiMgr->convertKey(arg.key, arg.text);
     CEGUI::System::getSingleton().injectKeyDown(arg.key);
     CEGUI::System::getSingleton().injectChar(arg.text);
 
@@ -78,7 +77,6 @@ bool crClient::keyPressed(const OIS::KeyEvent &arg) {
     return true;
 }
 bool crClient::keyReleased(const OIS::KeyEvent &arg) {
-    //guiMgr->convertKey(arg.key);
     CEGUI::System::getSingleton().injectKeyUp(arg.key);
 
     switch(arg.key) {

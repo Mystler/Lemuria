@@ -43,7 +43,7 @@ bool crClient::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
         case OIS::MB_Left:
             break;
         case OIS::MB_Right:
-            avMouseLook = guiMgr->toggleMouseCursor(arg, avMouseLook);
+            avMouseLook = guiMgr->toggleMouseCursor();
             break;
         default:
             break;
