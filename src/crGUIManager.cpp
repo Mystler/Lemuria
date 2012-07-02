@@ -19,11 +19,16 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 *==LICENSE==*/
 
 #include <CEGUI.h>
-#include <CEGUISystem.h>
 #include <RendererModules/Ogre/CEGUIOgreRenderer.h>
 
 #include "crClient.h"
 #include "crGUIManager.h"
+
+using namespace CEGUI;
+
+enum guiRootNames {
+    kEscMenu = 0,
+};
 
 crGUIManager::crGUIManager()
 : fEscActive(false),
@@ -32,45 +37,52 @@ crGUIManager::crGUIManager()
 
 void crGUIManager::setup() {
     //setup
-    fGUIRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+    fGUIRenderer = &OgreRenderer::bootstrapSystem();
     //configuration
-    CEGUI::SchemeManager::getSingleton().create((CEGUI::utf8 *)"VanillaSkin.scheme");
-    CEGUI::System::getSingleton().setDefaultMouseCursor("Vanilla-Images", "MouseArrow");
-    CEGUI::MouseCursor::getSingleton().setImage("Vanilla-Images", "MouseArrow");
-    CEGUI::MouseCursor::getSingleton().hide();
+    SchemeManager::getSingleton().create((utf8 *)"VanillaSkin.scheme");
+    System::getSingleton().setDefaultMouseCursor("Vanilla-Images", "MouseArrow");
+    MouseCursor::getSingleton().setImage("Vanilla-Images", "MouseArrow");
+    MouseCursor::getSingleton().hide();
     CEGUI::FontManager::getSingleton().create("DejaVuSans-10.font");
-    CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
-    //load GUIs
-    ///Esc Menu
-    fEscRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("MainMenu.layout");
-    CEGUI::System::getSingleton().setGUISheet( fEscRoot );
-    fEscRoot->setVisible(false);
-    fEscBtnExit = fEscRoot->getChildRecursive("Root/Background/btnExit");
-    fEscBtnExit->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&crGUIManager::captureQuit,this));
+    System::getSingleton().setDefaultFont("DejaVuSans-10");
+
     //get resolution from Window
     fHeight = crClient::getInstance().getWindowHeight();
     fWidth  = crClient::getInstance().getWindowWidth();
 }
 
-bool crGUIManager::captureQuit(const CEGUI::EventArgs& e) {
+void crGUIManager::loadGlobalGUI() {
+    //------------
+    //Esc Menu
+    //------------
+    if(fGUIRoots.size() <= kEscMenu)
+        fGUIRoots.resize(kEscMenu + 1);
+    fGUIRoots[kEscMenu] = WindowManager::getSingleton().loadWindowLayout("MainMenu.layout");
+    System::getSingleton().setGUISheet( fGUIRoots[kEscMenu] );
+    fGUIRoots[kEscMenu]->setVisible(false);
+    //register quit button for events
+    fGUIRoots[kEscMenu]->getChildRecursive("Root/Background/btnExit")->subscribeEvent(PushButton::EventClicked,Event::Subscriber(&crGUIManager::captureQuit,this));
+}
+
+bool crGUIManager::captureQuit(const EventArgs& e) {
     crClient::getInstance().shutdown();
     return true;
 }
 
 bool crGUIManager::toggleEscapeMenu() {
     if(!fEscActive) {
-        fEscRoot->setVisible(true);
+        fGUIRoots[kEscMenu]->setVisible(true);
         if(fMouseLook) {
-            CEGUI::MouseCursor::getSingleton().show();
-            CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(fWidth / 2, fHeight / 2));
+            MouseCursor::getSingleton().show();
+            MouseCursor::getSingleton().setPosition(Point(fWidth / 2, fHeight / 2));
         }
         fEscActive = true;
         return false;
     } else {
-        fEscRoot->setVisible(false);
+        fGUIRoots[kEscMenu]->setVisible(false);
         fEscActive = false;
         if(fMouseLook) {
-            CEGUI::MouseCursor::getSingleton().hide();
+            MouseCursor::getSingleton().hide();
             return true;
         }
         return false;
@@ -80,11 +92,11 @@ bool crGUIManager::toggleEscapeMenu() {
 bool crGUIManager::toggleMouseCursor() {
     if(!fEscActive) {
         if(fMouseLook) {
-            CEGUI::MouseCursor::getSingleton().show();
-            CEGUI::MouseCursor::getSingleton().setPosition(CEGUI::Point(fWidth / 2, fHeight / 2));
+            MouseCursor::getSingleton().show();
+            MouseCursor::getSingleton().setPosition(Point(fWidth / 2, fHeight / 2));
             fMouseLook = false;
         } else {
-            CEGUI::MouseCursor::getSingleton().hide();
+            MouseCursor::getSingleton().hide();
             fMouseLook = true;
         }
     }

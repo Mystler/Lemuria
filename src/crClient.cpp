@@ -139,6 +139,7 @@ bool crClient::init(void) {
     //CEGUI setup
     guiMgr = new crGUIManager();
     guiMgr->setup();
+    guiMgr->loadGlobalGUI();
 
     //init OgreOggSound
     //mSoundManager = OgreOggSound::OgreOggSoundManager::getSingletonPtr();

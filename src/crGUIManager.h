@@ -21,6 +21,8 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _crGUIManager_h
 #define _crGUIManager_h
 
+#include <vector>
+
 //Forward
 namespace CEGUI {
     class Renderer;
@@ -35,13 +37,14 @@ public:
 
     //functions
     void setup();
+    void loadGlobalGUI();
     bool captureQuit(const CEGUI::EventArgs& e);
     bool toggleEscapeMenu(); //returns avMouseLook
     bool toggleMouseCursor(); //returns avMouseLook
 private:
     CEGUI::Renderer *fGUIRenderer;
     CEGUI::Window *fEscRoot;
-    CEGUI::Window *fEscBtnExit;
+    std::vector<CEGUI::Window*> fGUIRoots;
     bool fEscActive;
     bool fMouseLook;
     int fWidth;
