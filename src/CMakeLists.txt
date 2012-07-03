@@ -6,6 +6,7 @@ set(CLIENT_HEADERS
     phAvatarController.h
     phBullet.h
     scObjectMgr.h
+    scWaveset.h
 )
 
 set(CLIENT_SOURCES
@@ -15,6 +16,7 @@ set(CLIENT_SOURCES
     phAvatarController.cpp
     phBullet.cpp
     scObjectMgr.cpp
+    scWaveset.cpp
 )
 
 set(3rdparty
