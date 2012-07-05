@@ -28,12 +28,22 @@ using namespace Ogre ;
 
 class scWaveset {
 public:
-    scWaveset(String name);
-    void update();
+    scWaveset(String name, MeshPtr msh);
+    void setup();
 private:
-    HardwareVertexBufferSharedPtr vbuf;
-    VertexBufferBinding *bind;
-    float vertices[9];
+    void calculateNormals();
+
+    HardwareVertexBufferSharedPtr fVPosBuf;
+    HardwareVertexBufferSharedPtr fVNormBuf;
+    VertexBufferBinding *fBind;
+    float *fVertices;
+    float *fNormals;
+    unsigned long *fFaces;
+    int fVertexCount;
+    int fIndexCount;
+    String fMeshName;
+    MeshPtr fMesh;
+    MeshPtr fOldMesh;
 } ;
 
 #endif

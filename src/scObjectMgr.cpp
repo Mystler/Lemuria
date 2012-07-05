@@ -21,6 +21,7 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 #include "scObjectMgr.h"
 #include "crClient.h"
 #include "phBullet.h"
+#include "scWaveset.h"
 
 #include "3rdparty/btogre/BtOgreGP.h"
 #include <OgreEntity.h>
@@ -46,6 +47,10 @@ void scObjectMgr::processScene(SceneManager *sceneMgr) {
         if(StringUtil::startsWith(scObjectName, "pho_")) {
             //create Physics
             Entity *ent = sceneMgr->getEntity(scObjectName);
+            if(StringUtil::match(scObjectName, "pho_ground", false)) {
+                scWaveset *bla = new scWaveset("bla", ent->getMesh());
+                bla->setup();
+            }
             Vector3 pos = node->getPosition();
             Quaternion rot = node->getOrientation();
 
