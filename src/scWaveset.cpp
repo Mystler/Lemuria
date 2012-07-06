@@ -48,12 +48,10 @@ void scWaveset::setup() {
         fVertices[3*i+1] = (*pReal++);
         fVertices[3*i+2] = (*pReal++);
         LogManager::getSingletonPtr()->logMessage("DEBUG: scWaveset Vertex x=" + StringConverter::toString(fVertices[3*i]) +
-            " y=" + StringConverter::toString(fVertices[3*i+1]) + 
+            " y=" + StringConverter::toString(fVertices[3*i+1]) +
             " z=" + StringConverter::toString(fVertices[3*i+2]));//remove when it's working
     }
     vBuf->unlock();
-    //fill Normals Array
-    calculateNormals();//needs to be written
     //fill Index Array
     unsigned short *pShort;
     unsigned int *pInt;
@@ -95,6 +93,8 @@ void scWaveset::setup() {
     fBind = fMesh->sharedVertexData->vertexBufferBinding;
     fBind->setBinding(0, fVPosBuf);
 
+    calculateNormals();
+
     //normals Buffer
     offset = 0;
     decl->addElement(1, offset, VET_FLOAT3, VES_NORMAL);
@@ -121,4 +121,39 @@ void scWaveset::setup() {
     fMesh->_setBounds(AxisAlignedBox(0,1,0,1,1,1));//this need some work
 
     fMesh->load();
+}
+
+void scWaveset::calculateNormals() {
+    //first we need a temporary array
+    Vector3 *vNormals = new Vector3[fVertexCount];
+    // set all normals to zero
+    for(int i=0; i < fVertexCount/3; i++)
+        vNormals[i] = Vector3::ZERO;
+    //now go through all faces and calculate the normals of them
+    for(int i=0; i < fIndexCount/3; i++) {
+        //get verteices of this face
+        int ind1 = fFaces[3*i];
+        int ind2 = fFaces[3*i+1];
+        int ind3 = fFaces[3*i+2];
+        //now get the positions of these vertices
+        Vector3 vert1 = Vector3(fVertices[3*ind1], fVertices[3*ind1+1], fVertices[3*ind1+2]);
+        Vector3 vert2 = Vector3(fVertices[3*ind2], fVertices[3*ind2+1], fVertices[3*ind2+2]);
+        Vector3 vert3 = Vector3(fVertices[3*ind3], fVertices[3*ind3+1], fVertices[3*ind3+2]);
+        //get the vectors, which define the face
+        Vector3 vec1 = vert3 - vert2;
+        Vector3 vec2 = vert1 - vert2;
+        //get the normal and write it into the array
+        Vector3 tn = vec1.crossProduct(vec2);
+        vNormals[ind1] += tn;
+        vNormals[ind2] += tn;
+        vNormals[ind3] += tn;
+    }
+    //now normalize the normals
+    for(int i=0; i < fVertexCount/3; i++) {
+        Vector3 n = vNormals[i];
+        n.normalise();
+        fNormals[3*i] = n.x;
+        fNormals[3*i+1] = n.y;
+        fNormals[3*i+2] = n.z;
+    }
 }
