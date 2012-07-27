@@ -30,6 +30,12 @@ class scWaveset {
 public:
     scWaveset(String name, MeshPtr msh);
     void setup();
+    void step();
+    //set Params
+    void setRippleSpeed(Real speed) { fRippleSpeed = speed; }
+    void setDistance(Real dist) { fDistance = dist; }
+    void setViscosity(Real visc) { fViscosity = visc; }
+    void setTime(Real time) { fTime = time; }
 private:
     void calculateNormals();
 
@@ -37,13 +43,22 @@ private:
     HardwareVertexBufferSharedPtr fVNormBuf;
     VertexBufferBinding *fBind;
     float *fVertices;
+    float *fVertices1;
+    float *fVertices2;
     float *fNormals;
     unsigned long *fFaces;
     int fVertexCount;
     int fIndexCount;
+    unsigned long fXComplexity;
+    unsigned long fYComplexity;
     String fMeshName;
     MeshPtr fMesh;
     MeshPtr fOldMesh;
+    //Params
+    Real fRippleSpeed; //C
+    Real fDistance; //D
+    Real fViscosity; //U
+    Real fTime; //T
 } ;
 
 #endif

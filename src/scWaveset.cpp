@@ -22,7 +22,13 @@ along with Lemuria. If not, see <http://www.gnu.org/licenses/>.
 
 scWaveset::scWaveset(String name, MeshPtr msh)
 : fMeshName(name),
-  fMesh(msh) { }
+  fMesh(msh) {
+    // initialize algorithm parameters
+	fRippleSpeed = 0.3f;
+	fDistance = 0.4f;
+	fViscosity = 0.05f;
+	fTime = 0.13f;
+}
 
 void scWaveset::setup() {
     //-----------
@@ -93,6 +99,27 @@ void scWaveset::setup() {
     fBind = fMesh->sharedVertexData->vertexBufferBinding;
     fBind->setBinding(0, fVPosBuf);
 
+    fVertices1 = fVertices;
+    fVertices2 = fVertices;
+
+    //calculate Complexities
+    //we assume that we have a rectangle with a homogeneous distribution of the vertices
+    Vector3 p1 = Vector3(fVertices[0], fVertices[1], fVertices[2]);
+    Vector3 p2 = Vector3(fVertices[3], fVertices[4], fVertices[5]);
+    Vector3 nextPoint = p2;
+    Vector3 nextPointT = p2;
+    Vector3 vec = p2 - p1;
+    fXComplexity = 2;
+    for(int i=2; i<fVertexCount/2; i++) {
+        nextPoint = Vector3(fVertices[3*i], fVertices[3*i+1], fVertices[3*i+2]);
+        nextPointT += vec;
+        if(nextPointT == nextPoint)
+            fXComplexity += 1;
+        else
+            break;
+    }
+    fYComplexity = fVertexCount/fXComplexity;
+
     calculateNormals();
 
     //normals Buffer
@@ -156,4 +183,7 @@ void scWaveset::calculateNormals() {
         fNormals[3*i+1] = n.y;
         fNormals[3*i+2] = n.z;
     }
+}
+
+void scWaveset::step() {
 }
