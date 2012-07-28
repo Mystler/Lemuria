@@ -103,7 +103,7 @@ void scWaveset::setup() {
     fVertices2 = fVertices;
 
     //calculate Complexities
-    //we assume that we have a rectangle with a homogeneous distribution of the vertices
+    //we assume that we have a rectangle with a homogeneous dispensation of the vertices
     Vector3 p1 = Vector3(fVertices[0], fVertices[1], fVertices[2]);
     Vector3 p2 = Vector3(fVertices[3], fVertices[4], fVertices[5]);
     Vector3 nextPoint = p2;
@@ -186,4 +186,33 @@ void scWaveset::calculateNormals() {
 }
 
 void scWaveset::step() {
+    double c = fRippleSpeed;
+    double d = fDistance;
+    double u = fViscosity;
+    double t = fTime;
+
+    float *tempBuffer = fVertices;
+    Real v1 = (4.0f - 8.0f*c*c*t*t/(d*d))/(u*t+2);
+    Real v2 = (u*t-2.0f)/(u*t+2.0f);
+    Real v3 = (2.0f*c*c*t*t/(d*d))/(u*t+2);
+
+    for(int y=1; y<fYComplexity; y++) {
+        for(int x=1; x<fXComplexity; x++) {
+            tempBuffer[3*x+1+y*fXComplexity] = v1*fVertices1[3*x+1+y*fXComplexity];
+            tempBuffer[3*x+1+y*fXComplexity] += v2*fVertices2[3*x+1+y*fXComplexity];
+            tempBuffer[3*x+1+y*fXComplexity] += v3*(fVertices1[3*x-2+y*fXComplexity]
+                                                +fVertices1[3*x+4+y*fXComplexity]
+                                                +fVertices1[3*x+1+(y-1)*fXComplexity]
+                                                +fVertices1[3*x+1+(y+1)*fXComplexity]);
+        }
+    }
+    fVertices2 = fVertices1;
+    fVertices1 = fVertices;
+    fVertices = tempBuffer;
+    delete tempBuffer;
+    calculateNormals();
+
+    fVPosBuf->writeData(0, fVPosBuf->getSizeInBytes(), fVertices, true);
+
+    fBind->setBinding(0, fVPosBuf);
 }
